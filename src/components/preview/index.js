@@ -15,6 +15,8 @@ class Preview extends Component{
 	 emitted(dATA) {
 		console.log(dATA); // true
 	}
+
+
 	componentDidMount() {
 		this.props.emitter.on(Events.LOADED_IMAGE, (data) => {
 			console.log(data);
@@ -47,6 +49,7 @@ class Preview extends Component{
 
 
 	componentDidUpdate(nextProps, nextState, nextContext) {
+		console.log('componentDidUpdate');
 		this.ctx.drawImage(this.image,
 			this.state.cropArea.x, this.state.cropArea.y,   // Start at 70/20 pixels from the left and the top of the image (crop),
 			this.state.cropArea.w, this.state.cropArea.h,   // "Get" a `50 * 50` (w * h) area from the source image (crop),
@@ -57,8 +60,11 @@ class Preview extends Component{
 	render(props, state, context) {
 		return (
 			<div>
-				<canvas id="canvasPreview"></canvas>
-				<div>{this.state.cropArea.x}</div>
+				<canvas id="canvasPreview" style={{display: "none"}}></canvas>
+				<svg width="3cm" height="4cm" version="1.1"
+					 xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
+					<image xlink:href="https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg" x="0" y="0" height="100%" width="100%"></image>
+				</svg>
 			</div>
 		)
 

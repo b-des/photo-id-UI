@@ -20,6 +20,8 @@ class Editor extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
+		console.log(prevProps);
+		console.log(this.props);
 		if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
 			console.log('loadAndRenderImage');
 			this.loadAndRenderImage(this.props.imageUrl);
@@ -180,30 +182,23 @@ class Editor extends Component {
 
 		let height = parseInt(this._cropArea.getAttribute('height'));
 		let width = parseInt(this._cropArea.getAttribute('width'));
-		this.props.emitter.emit(Events.UPDATE_LANDMARK, {
-			crownPosition: this.crownPoint,
-			chinPosition: this.chinPoint,
-			x: parseInt(this._cropRect.getAttribute('x')),
-			y: parseInt(this._cropRect.getAttribute('y')),
-			height: height,
-			width: width
-		});
+
 		let imageHeight = parseInt(this._imgElmt.getAttribute('height'));
 		let imageWidth = parseInt(this._imgElmt.getAttribute('width'));
 		//console.log(imageWidth, imageHeight);
-		let x = (this.crownPoint.x * this._ratio) / imageWidth * 100;
-		let y = (this.crownPoint.y * this._ratio) / imageHeight * 100;
-		if(x > 100)
-			x = 100;
-		if(x < 0)
-			x = 0;
-		if(y > 100)
-			y = 100;
-		if(y < 0)
-			y = 0;
-		console.log(this.frameCoords[0]);
-		console.log(`x:${x}%, y:${y}%`);
-
+		let crownPoint = {
+			x: (this.crownPoint.x * this._ratio) / imageWidth * 100,
+			y: (this.crownPoint.y * this._ratio) / imageHeight * 100
+		};
+		let chinPoint = {
+			x: (this.chinPoint.x * this._ratio) / imageWidth * 100,
+			y: (this.chinPoint.y * this._ratio) / imageHeight * 100
+		};
+		console.log(`x:${crownPoint.x}%, y:${crownPoint.y}%`);
+		this.props.emitter.emit(Events.UPDATE_LANDMARK, {
+			crownPosition: crownPoint,
+			chinPosition: chinPoint,
+		});
 
 	}
 
@@ -232,8 +227,8 @@ class Editor extends Component {
 
 	pixelToScreen(pt) {
 		return new Point(
-			this._xLeft + pt.x * this._ratio - this._crownChinMarkSize / 2,
-			this._yTop + pt.y * this._ratio - this._crownChinMarkSize / 2
+			this._xLeft + pt.x /** this._ratio*/ - this._crownChinMarkSize / 2,
+			this._yTop + pt.y /** this._ratio*/ - this._crownChinMarkSize / 2
 		);
 	}
 
@@ -357,13 +352,12 @@ class Editor extends Component {
 				<rect x="0" y="0" width="1000" height="1000" fill-opacity="0.4" mask="url(#mask)"/>
 				<rect id="cropRect" x="0" y="0" width="200" height="200" fill="none"/>
 				<line id="heightLine" x1="0" y1="0" x2="0" y2="0" className="dimension-line"/>
-				<text id="heightText" x="0" y="0" className="dimension-text" text-anchor="middle"></text>
 				<line id="widthLine" x1="0" y1="0" x2="0" y2="0" className="dimension-line"/>
-				<text id="widthText" x="0" y="0" className="dimension-text" text-anchor="middle"></text>
 				<line id="middleLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
 				<line id="crownLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
 				<line id="chinLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
 				<ellipse id="faceEllipse" cx="100" cy="50" rx="100" ry="50" fill="none" className="annotation"/>
+
 			</svg>
 			<div className="landmark" id="crownMark"
 				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>

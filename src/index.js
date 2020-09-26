@@ -9,8 +9,10 @@ class PhotoPassport extends Component{
 		super();
 		this.child = createRef();
 		options = Object.assign({}, options);
+		let container = document.getElementById(options.container) || document.body;
+		//container.addEventListener('contextmenu', event => event.preventDefault());
 		render(
-			<App ref={this.child}/>, document.getElementById(options.container) || document.body
+			<App ref={this.child}/>, container
 		)
 	}
 
