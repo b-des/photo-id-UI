@@ -5,6 +5,8 @@ import { getCroppingCenter, PhotoDimensions } from '../../model/photodimensions'
 import EventEmitter from 'eventemitter3';
 import { Events } from '../../shared/event-emitter/events';
 import axios from 'axios';
+import LoadingMask from 'react-loadingmask';
+
 
 class Editor extends Component {
 
@@ -332,7 +334,9 @@ class Editor extends Component {
 	}
 
 	render(props, state, context) {
-		return <div id="viewport">
+		return <LoadingMask loading={this.state.image == null} text={'loading...'}>
+			<div id="viewport">
+
 			<img
 				id="inputPhoto"
 				alt="Input Image"
@@ -365,7 +369,9 @@ class Editor extends Component {
 				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
 			<div className="landmark" id="chinMark"
 				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
-		</div>;
+
+		</div>
+		</LoadingMask>;
 	}
 }
 

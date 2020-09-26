@@ -20,11 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5506e9ab-0725-4106-a35a-2c65c7798fba" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/preact.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/editor/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/editor/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
@@ -181,7 +178,7 @@
       <workItem from="1582455520800" duration="8947000" />
       <workItem from="1584352271434" duration="157000" />
       <workItem from="1601094723666" duration="18123000" />
-      <workItem from="1601126340926" duration="5434000" />
+      <workItem from="1601126340926" duration="6623000" />
     </task>
     <servers />
   </component>
@@ -203,21 +200,21 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1601132673886">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1601133403917">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1601132673886" />
-    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1601132673885">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403917" />
+    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1601133403916">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1601132673885" />
-    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1601132673885">
+    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403916" />
+    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1601133403916">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1601132673885" />
-    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1601132673885">
+    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403916" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1601133403917">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1601132673885" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403917" />
   </component>
 </project>
