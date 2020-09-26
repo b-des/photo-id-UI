@@ -1,12 +1,14 @@
 import { Component, h } from 'preact';
 import { Events } from '../../shared/event-emitter/events';
-
+import axios from 'axios';
+import LoadingMask from "react-loadingmask";
 
 class Preview extends Component{
 	constructor(){
 		super();
 		this.image = new Image();
 		this.state = {
+			preview: null,
 			cropArea: {
 				x:50, y:50, w:50, h:50
 			}
@@ -45,27 +47,45 @@ class Preview extends Component{
 				400, 300); // With as width / height: 100 * 100 (scale)
 		}
 
+		//https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg
+
+
+
 	}
 
 
-	componentDidUpdate(nextProps, nextState, nextContext) {
-		console.log('componentDidUpdate');
-		this.ctx.drawImage(this.image,
-			this.state.cropArea.x, this.state.cropArea.y,   // Start at 70/20 pixels from the left and the top of the image (crop),
-			this.state.cropArea.w, this.state.cropArea.h,   // "Get" a `50 * 50` (w * h) area from the source image (crop),
-			0, 0,     // Place the result at 0, 0 in the canvas,
-			this.state.cropArea.w, this.state.cropArea.h); // With as width / height: 100 * 100 (scale)
+	componentDidUpdate(prevProps, prevState, nextContext) {
+		console.log();
+
+		if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
+			console.log(this.props.imageUrl)
+			axios.post('http://localhost:5000/api/render-photo', {
+				url: this.props.imageUrl,
+				size: this.props.previewSize
+			})
+				.then((response) => {
+					// handle success
+					console.log(response.data);
+					this.setState({
+						preview: 'data:image/png;base64, ' + response.data
+					});
+				}).catch(error => {
+				// handle error
+				console.log(error);
+			});
+		}
 	}
 
 	render(props, state, context) {
 		return (
-			<div>
-				<canvas id="canvasPreview" style={{display: "none"}}></canvas>
-				<svg width="3cm" height="4cm" version="1.1"
-					 xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
-					<image xlink:href="https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg" x="0" y="0" height="100%" width="100%"></image>
-				</svg>
-			</div>
+			<LoadingMask loading={this.state.preview == null} text={"loading..."}>
+				<div style={{width:'200px', height:'200px'}}>
+					<canvas id="canvasPreview" style={{display: "none"}}></canvas>
+					<svg width="3cm" height="4cm" version="1.1">
+						<image xlink:href={this.state.preview} x="0" y="0" height="100%" width="100%"></image>
+					</svg>
+				</div>
+			</LoadingMask>
 		)
 
 	}

@@ -18,10 +18,10 @@ export default class App extends Component {
 		this.emitter = new EventEmitter();
 
 		return (
-			<div class="columns-2">
+			<div class="" style={{display:"flex"}}>
 				<Editor emitter={this.emitter} imageUrl={this.state.imageUrl}/>
 
-				<Preview emitter={this.emitter}/>
+				<Preview emitter={this.emitter} imageUrl={this.state.imageUrl} previewSize={this.props.options.preview.size}/>
 
 				<button style={{ 'margin': '0 auto' }} onClick={this.switchView.bind(this)}>
 					{this.state.view === 'editor' ? 'Preview' : 'Edit'}

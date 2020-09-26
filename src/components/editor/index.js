@@ -4,6 +4,7 @@ import { middlePoint, Point, pointsAtDistanceNorm, rotatedRectangle } from '../.
 import { getCroppingCenter, PhotoDimensions } from '../../model/photodimensions';
 import EventEmitter from 'eventemitter3';
 import { Events } from '../../shared/event-emitter/events';
+import axios from 'axios';
 
 class Editor extends Component {
 
@@ -26,6 +27,7 @@ class Editor extends Component {
 			console.log('loadAndRenderImage');
 			this.loadAndRenderImage(this.props.imageUrl);
 		}
+
 	}
 
 	componentDidMount() {
