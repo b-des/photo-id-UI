@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 import EventEmitter from 'eventemitter3';
-import Editor from './landmark-editor';
+import Editor from './editor';
 import Preview from './preview';
 import React from 'preact/compat';
 

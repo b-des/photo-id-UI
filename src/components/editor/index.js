@@ -19,8 +19,6 @@ class Editor extends Component{
 		};
 	}
 
-
-
 	componentDidMount(){
 		this._imgElmt = document.querySelector('#inputPhoto');
 		this._viewPortElmt = document.querySelector('#viewport');
@@ -73,7 +71,7 @@ class Editor extends Component{
 
 		interact('.landmark').draggable({
 			// enable inertial throwing
-			inertia: false,
+			inertia: true,
 			// keep the element within the area of it's parent
 			modifiers: [
 				interact.modifiers.restrictRect({
@@ -327,9 +325,11 @@ class Editor extends Component{
 				src={this.state.image}
 				onLoad={this.onLoadImage.bind(this)}
 				onError={this.imageLoadFailed.bind(this)}
+
 			/>
 			<svg className="box" style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}
 				 pointer-events="none">
+				<image class="inputPhoto" xlink:href={this.state.image} x="0" y="0" height="0" width="0"/>
 				<defs>
 					<mask id="mask" x="0" y="0" width="100%" height="100%">
 						<rect id="imageArea" x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
