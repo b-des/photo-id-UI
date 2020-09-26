@@ -1,0 +1,11 @@
+@import "global";
+@import "mixins";
+@import "components/landmark-editor";
+@import 'grid-css-framework/dist/grid.scss';
+
+body{
+  background: #5fb24f;
+  @include lte-desktop{
+    background: #673AB7;
+  }
+}

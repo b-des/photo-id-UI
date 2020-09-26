@@ -1,0 +1,5 @@
+body {
+  background: #5fb24f; }
+  @media screen and (max-width: 1024px) {
+    body {
+      background: #673AB7; } }
