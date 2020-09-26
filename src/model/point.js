@@ -39,6 +39,10 @@ export class Point {
 		const dy = this.y - pt.y;
 		return Math.atan2(dy, dx);
 	}
+
+	toString(){
+		return `Point(x:${this.x}, y:${this.y})`
+	}
 }
 
 export function middlePoint(pt1, pt2) {

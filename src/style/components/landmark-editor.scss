@@ -10,6 +10,7 @@
 #inputPhoto {
   position: absolute;
   z-index: 0;
+
 }
 #viewport {
   position: relative;
@@ -29,7 +30,8 @@
 }
 @media (min-aspect-ratio: 4/5) {
   #viewport {
-    height: 55vh;
+    height: 400px;
+
   }
 }
 .box {

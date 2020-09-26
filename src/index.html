@@ -6,9 +6,15 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<div id="container"></div>
+<div id="app" style="width: 50%; margin: 0 auto"></div>
 <script type="text/javascript">
-	let pp = new PhotoPassport();
+	let pp = new PhotoPassport({
+        container: "app"
+    });
+	//pp.setImage('https://st2.depositphotos.com/5444644/11711/i/950/depositphotos_117119380-stock-photo-beauty-portrait-of-beautiful-girl.jpg');
+	setTimeout(() =>{
+		pp.setImage('https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg')
+    }, 20);
 </script>
 </body>
 </html>

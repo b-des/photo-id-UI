@@ -9,11 +9,18 @@ export default class App extends Component {
 
 	render(props, state, context) {
 		this.emitter = new EventEmitter();
+
 		return (
 			<div class="columns-2">
-				<Editor emitter={this.emitter}/>
+				<Editor emitter={this.emitter} imageUrl={this.state.imageUrl}/>
 				<Preview emitter={this.emitter}/>
 			</div>
 		);
+	}
+
+	setImageUrl(url){
+		this.setState({
+			imageUrl: url
+		})
 	}
 }

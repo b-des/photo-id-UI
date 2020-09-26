@@ -5,9 +5,9 @@ import { getCroppingCenter, PhotoDimensions } from '../../model/photodimensions'
 import EventEmitter from 'eventemitter3';
 import { Events } from '../../shared/event-emitter/events';
 
-class Editor extends Component{
+class Editor extends Component {
 
-	constructor(){
+	constructor() {
 		super();
 		// size of circle markers
 		this._crownChinMarkSize = 16;
@@ -19,7 +19,14 @@ class Editor extends Component{
 		};
 	}
 
-	componentDidMount(){
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
+			console.log('loadAndRenderImage');
+			this.loadAndRenderImage(this.props.imageUrl);
+		}
+	}
+
+	componentDidMount() {
 		this._imgElmt = document.querySelector('#inputPhoto');
 		this._viewPortElmt = document.querySelector('#viewport');
 		this._crownMarkElmt = document.querySelector('#crownMark');
@@ -40,34 +47,28 @@ class Editor extends Component{
 
 		this._cropRect = document.querySelector('#cropRect');
 
-		this._heightLine = document.querySelector('#heightLine');
-		this._heightText = document.querySelector('#heightText');
-		this._widthLine = document.querySelector('#widthLine');
-		this._widthText = document.querySelector('#widthText');
-
 		let standard = {
-			"id": "ua_visa_photo",
-			"text": "Ukraine Visa 3x4 cm (30x40 mm)",
-			"country": "Ukraine",
-			"docType": "Visa",
-			"dimensions": {
-				"pictureWidth": 30.0,
-				"pictureHeight": 40.0,
-				"units": "mm",
-				"dpi": 600.0,
-				"faceHeight": 31.0,
-				"crownTop": 2.5
+			'id': 'ua_visa_photo',
+			'text': 'Ukraine Visa 3x4 cm (30x40 mm)',
+			'country': 'Ukraine',
+			'docType': 'Visa',
+			'dimensions': {
+				'pictureWidth': 30.0,
+				'pictureHeight': 40.0,
+				'units': 'mm',
+				'dpi': 600.0,
+				'faceHeight': 31.0,
+				'crownTop': 2.5
 			},
-			"backgroundColor": "#eeeeee",
-			"printable": true,
-			"officialLinks": [
-				"http://mfa.gov.ua/ua/consular-affairs/entering-ukraine/visa-mfa-branches"
+			'backgroundColor': '#eeeeee',
+			'printable': true,
+			'officialLinks': [
+				'http://mfa.gov.ua/ua/consular-affairs/entering-ukraine/visa-mfa-branches'
 			],
-			"comments": ""
+			'comments': ''
 		};
 
 		this._photoDimensions = standard.dimensions;
-		this.loadAndRenderImage();
 
 		interact('.landmark').draggable({
 			// enable inertial throwing
@@ -77,7 +78,7 @@ class Editor extends Component{
 				interact.modifiers.restrictRect({
 					restriction: 'parent',
 					endOnly: true,
-					elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+					elementRect: { top: 0.5, left: 0.5, bottom: 1, right: 1 }
 				})
 			],
 
@@ -107,12 +108,12 @@ class Editor extends Component{
 			reader.readAsDataURL(blob);
 		}));
 
-	 loadAndRenderImage() {
-		this.toDataURL('https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg')
+	loadAndRenderImage(url) {
+		this.toDataURL(url)
 			.then(data => {
 				this.setState({
 					image: data
-				})
+				});
 			});
 	}
 
@@ -124,16 +125,16 @@ class Editor extends Component{
 			this.calculateViewPort();
 			this.zoomFit();
 			this.renderImage();
-			this.setLandMarks(new Point(140,50), new Point(150,150));
+			this.setLandMarks(new Point(161, 50), new Point(150, 150));
 		}
 		this.props.emitter.emit(Events.LOADED_IMAGE, {
-			viewPortWidth:this._viewPortWidth,
-			viewPortHeight:this._viewPortHeight,
+			viewPortWidth: this._viewPortWidth,
+			viewPortHeight: this._viewPortHeight
 		});
 		this.scaledImageWidth = this._imageArea.getAttribute('width');
 		this.scaledImageHeight = this._imageArea.getAttribute('height');
 		console.log(this.scaledImageWidth);
-	 }
+	}
 
 	calculateViewPort() {
 		if (!this._viewPortElmt) {
@@ -174,7 +175,7 @@ class Editor extends Component{
 
 		this.setState({
 			crownPosition: this.crownPoint,
-			chinPosition: this.chinPoint,
+			chinPosition: this.chinPoint
 		});
 
 		let height = parseInt(this._cropArea.getAttribute('height'));
@@ -187,7 +188,22 @@ class Editor extends Component{
 			height: height,
 			width: width
 		});
-		console.log(this.crownPoint, this.chinPoint);
+		let imageHeight = parseInt(this._imgElmt.getAttribute('height'));
+		let imageWidth = parseInt(this._imgElmt.getAttribute('width'));
+		//console.log(imageWidth, imageHeight);
+		let x = (this.crownPoint.x * this._ratio) / imageWidth * 100;
+		let y = (this.crownPoint.y * this._ratio) / imageHeight * 100;
+		if(x > 100)
+			x = 100;
+		if(x < 0)
+			x = 0;
+		if(y > 100)
+			y = 100;
+		if(y < 0)
+			y = 0;
+		console.log(this.frameCoords[0]);
+		console.log(`x:${x}%, y:${y}%`);
+
 
 	}
 
@@ -208,15 +224,16 @@ class Editor extends Component{
 			this.translateElement(this._chinMarkElmt, p2);
 			this.renderSvgFrame();
 			this.landmarkVisibility = 'visible';
-		} else {
+		}
+		else {
 			this.landmarkVisibility = 'hidden';
 		}
 	}
 
 	pixelToScreen(pt) {
 		return new Point(
-			this._xLeft + pt.x * this._ratio - this._crownChinMarkSize/2,
-			this._yTop + pt.y * this._ratio - this._crownChinMarkSize/2
+			this._xLeft + pt.x * this._ratio - this._crownChinMarkSize / 2,
+			this._yTop + pt.y * this._ratio - this._crownChinMarkSize / 2
 		);
 	}
 
@@ -233,8 +250,8 @@ class Editor extends Component{
 	}
 
 	getMarkScreenCenter(elmt) {
-		const x = parseFloat(elmt.getAttribute('x')) + (this._crownChinMarkSize ) / 2.0;
-		const y = parseFloat(elmt.getAttribute('y')) + (this._crownChinMarkSize ) / 2.0;
+		const x = parseFloat(elmt.getAttribute('x')) + (this._crownChinMarkSize) / 2.0;
+		const y = parseFloat(elmt.getAttribute('y')) + (this._crownChinMarkSize) / 2.0;
 		return new Point(x, y);
 	}
 
@@ -291,6 +308,7 @@ class Editor extends Component{
 		this._setRotatedRect(this._cropArea, cropCenter, dx, dy, angleDeg);
 		this._setRotatedRect(this._cropRect, cropCenter, dx, dy, angleDeg);
 		const points = rotatedRectangle(cropCenter, dx, dy, angleRad);
+		this.frameCoords = points;
 		const invalidCrop = points.some(pt => {
 			const ptPix = this.screenToPixel(pt);
 			return ptPix.x < 0 || ptPix.x > this._imageWidth || ptPix.y < 0 || ptPix.y > this._imageHeight;
@@ -313,7 +331,7 @@ class Editor extends Component{
 		svdElmt.setAttribute('y2', p2.y);
 	}
 
-	imageLoadFailed(){
+	imageLoadFailed() {
 	}
 
 	render(props, state, context) {
@@ -351,7 +369,7 @@ class Editor extends Component{
 				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
 			<div className="landmark" id="chinMark"
 				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
-		</div>
+		</div>;
 	}
 }
 
