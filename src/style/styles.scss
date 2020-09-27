@@ -4,8 +4,15 @@
 @import 'grid-css-framework/dist/grid.scss';
 
 body{
-  background: #5fb24f;
+  background: #fef1e0;
   @include lte-desktop{
     background: #673AB7;
+  }
+  .app-card{
+    background: #fbfbfb;
+    border-radius: 10px;
+    box-shadow: 0px 1px 8px -4px #7b7a7a;
+    padding: 0;
+    margin: 10px;
   }
 }

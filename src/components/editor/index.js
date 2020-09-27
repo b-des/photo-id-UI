@@ -23,16 +23,14 @@ class Editor extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		console.log(prevProps);
-		console.log(this.props);
 		if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
-			console.log('loadAndRenderImage');
 			this.loadAndRenderImage(this.props.imageUrl);
 		}
 
 	}
 
 	componentDidMount() {
+		this.loadAndRenderImage(this.props.imageUrl);
 		this._imgElmt = document.querySelector('#inputPhoto');
 		this._viewPortElmt = document.querySelector('#viewport');
 		this._crownMarkElmt = document.querySelector('#crownMark');
@@ -139,7 +137,6 @@ class Editor extends Component {
 		});
 		this.scaledImageWidth = this._imageArea.getAttribute('width');
 		this.scaledImageHeight = this._imageArea.getAttribute('height');
-		console.log(this.scaledImageWidth);
 	}
 
 	calculateViewPort() {
@@ -187,9 +184,9 @@ class Editor extends Component {
 		let height = parseInt(this._cropArea.getAttribute('height'));
 		let width = parseInt(this._cropArea.getAttribute('width'));
 
+
 		let imageHeight = parseInt(this._imgElmt.getAttribute('height'));
 		let imageWidth = parseInt(this._imgElmt.getAttribute('width'));
-		//console.log(imageWidth, imageHeight);
 		let crownPoint = {
 			x: (this.crownPoint.x * this._ratio) / imageWidth * 100,
 			y: (this.crownPoint.y * this._ratio) / imageHeight * 100
@@ -198,10 +195,15 @@ class Editor extends Component {
 			x: (this.chinPoint.x * this._ratio) / imageWidth * 100,
 			y: (this.chinPoint.y * this._ratio) / imageHeight * 100
 		};
-		console.log(`x:${crownPoint.x}%, y:${crownPoint.y}%`);
+		console.log(this.angle);
 		this.props.emitter.emit(Events.UPDATE_LANDMARK, {
 			crownPosition: crownPoint,
 			chinPosition: chinPoint,
+			angle: this.angle,
+			cropArea: this.frameCoords.map((item) => {
+
+				return {x: (item.x ) / imageWidth * 100, y: item.y / imageHeight * 100}
+			})
 		});
 
 	}
@@ -271,10 +273,12 @@ class Editor extends Component {
 
 		const faceHeight = p1.distTo(p2);
 		const crownSegment = pointsAtDistanceNorm(p1, p2, faceHeight * 0.5, p1);
-		this._renderSegment(this._crownLine, crownSegment[0], crownSegment[1]);
+		if(Math.abs(crownSegment[0].x) !== Math.abs(crownSegment[1].x))
+			this._renderSegment(this._crownLine, crownSegment[0], crownSegment[1]);
 
 		const chinSegment = pointsAtDistanceNorm(p1, p2, faceHeight * 0.5, p2);
-		this._renderSegment(this._chinLine, chinSegment[0], chinSegment[1]);
+		if(Math.abs(chinSegment[0].x) !== Math.abs(chinSegment[1].x))
+			this._renderSegment(this._chinLine, chinSegment[0], chinSegment[1]);
 
 		// Render face ellipse
 		const ra = faceHeight / 2;
@@ -308,6 +312,7 @@ class Editor extends Component {
 		this._setRotatedRect(this._cropRect, cropCenter, dx, dy, angleDeg);
 		const points = rotatedRectangle(cropCenter, dx, dy, angleRad);
 		this.frameCoords = points;
+		this.angle = angleDeg;
 		const invalidCrop = points.some(pt => {
 			const ptPix = this.screenToPixel(pt);
 			return ptPix.x < 0 || ptPix.x > this._imageWidth || ptPix.y < 0 || ptPix.y > this._imageHeight;

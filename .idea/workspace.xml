@@ -20,13 +20,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5506e9ab-0725-4106-a35a-2c65c7798fba" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/welcome/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/welcome/list.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/editor/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/editor/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/style/components/landmark-editor.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/style/components/landmark-editor.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/style/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/style/styles.scss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,40 +48,6 @@
         <option value="JavaScript File" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>setLandMarks</find>
-      <find>chinMark</find>
-      <find>this.crownPoint</find>
-      <find>: number</find>
-      <find>: string</find>
-      <find>: Point</find>
-      <find>: PhotoDimensions</find>
-      <find>rotatedRectangle</find>
-      <find>this._cropRect</find>
-      <find>this.emitter</find>
-      <find>screenToPixel</find>
-      <find>this._crownMarkElmt</find>
-      <find>widthLine</find>
-      <find>_crownChinMarkSize</find>
-      <find>cropRect</find>
-      <find>heightText</find>
-      <find>imageArea</find>
-      <find>renderAnnotations</find>
-      <find>_renderSegment</find>
-      <find>zoomFit</find>
-      <find>imageLoaded</find>
-      <find>getMarkScreenCenter</find>
-      <find>renderLandMarks</find>
-      <find>getImageDataUrl</find>
-      <find>ukr</find>
-      <find>inputPhoto</find>
-      <find>_imgElmt</find>
-      <find>render</find>
-      <find>preact</find>
-      <find>componentDidUpdate</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -178,7 +148,8 @@
       <workItem from="1582455520800" duration="8947000" />
       <workItem from="1584352271434" duration="157000" />
       <workItem from="1601094723666" duration="18123000" />
-      <workItem from="1601126340926" duration="6623000" />
+      <workItem from="1601126340926" duration="7147000" />
+      <workItem from="1601187539545" duration="19717000" />
     </task>
     <servers />
   </component>
@@ -195,26 +166,31 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1601133403917">
+    <state x="52" y="160" width="1806" height="793" key="#Live_Templates" timestamp="1601190168849">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403917" />
-    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1601133403916">
+    <state x="52" y="160" width="1806" height="793" key="#Live_Templates/0.27.1920.1053@0.27.1920.1053" timestamp="1601190168849" />
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1601198161737">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403916" />
-    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1601133403916">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1601198161737" />
+    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1601198161737">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403916" />
-    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1601133403917">
+    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1601198161737" />
+    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1601198161736">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1601133403917" />
+    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1601198161736" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1601198161737">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1601198161737" />
   </component>
 </project>

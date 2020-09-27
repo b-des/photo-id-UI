@@ -14,7 +14,8 @@ class PhotoPassport extends Component{
 		let defaults = {
 			preview:{
 				size: 250
-			}
+			},
+			tips:[]
 		}
 		//options = {...options, defaults};
 		options = Object.assign({}, defaults, options);

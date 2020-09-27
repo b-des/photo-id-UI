@@ -55,6 +55,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "eventemitter3": "^4.0.0",
+    "fabric": "^4.2.0",
     "grid-css-framework": "^2.5.0",
     "image-to-base64": "^2.0.1",
     "interactjs": "^1.8.2",
