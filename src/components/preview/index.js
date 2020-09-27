@@ -63,8 +63,42 @@ class Preview extends Component {
 		this.props.emitter.on(Events.LOADED_IMAGE, (data) => {
 			console.log(data);
 		});
+
+		function newSize(w,h,a){
+			let size = {};
+			var rads=a*Math.PI/180;
+			var c = Math.cos(rads);
+			var s = Math.sin(rads);
+			if (s < 0) { s = -s; }
+			if (c < 0) { c = -c; }
+			size.width = h * s + w * c;
+			size.height = h * c + w * s ;
+			return size;
+		}
+
+
 		this.props.emitter.on(Events.UPDATE_LANDMARK, (data) => {
 			console.log(JSON.stringify(data.cropArea));
+
+			let cx = (data.cropArea[1].x + data.cropArea[3].x)/2;
+			let cy = (data.cropArea[1].y + data.cropArea[3].y)/2 ;
+
+
+			let area = data.cropArea.map((item) => {
+				let tempX = item.x - cx;
+				let tempY = item.y - cy;
+
+				var rotatedX = item.x + (tempX  * Math.cos(data.angle.rad)) - (tempY * Math.sin(data.angle.rad))
+				var rotatedY = item.y + (tempX  * Math.sin(data.angle.rad)) + (tempY * Math.cos(data.angle.rad))
+				return {
+					//x: tempX * Math.cos(data.angle) - tempY * Math.sin(data.angle),
+					//y: tempX * Math.sin(data.angle) + tempY * Math.cos(data.angle),
+					x: rotatedX,
+					y: rotatedY,
+				}
+			});
+			console.log(area);
+
 
 			let tmpCanvas = new this.fabric.Canvas();
 			let tmpImgInstance = new this.fabric.Image(img, {
@@ -78,15 +112,19 @@ class Preview extends Component {
 			});
 			let angle = 0;
 
-			if(data.angle > 90)
-				angle = data.angle - 90;
-			tmpImgInstance.rotate(90 - data.angle);
-			tmpCanvas.setWidth(img.width);
-			tmpCanvas.setHeight(img.height);
+
+			tmpImgInstance.rotate(90 - data.angle.deg);
+			let nSize = newSize(img.width, img.height, 90 - data.angle.deg);
+			tmpImgInstance.left = 0;//(nSize.width - img.width) / 2;
+			tmpImgInstance.top = 0;
+			tmpCanvas.setWidth(nSize.width);
+			tmpCanvas.setHeight(nSize.height);
+			tmpCanvas.backgroundColor = '#ccc'
 			tmpCanvas.add(tmpImgInstance);
 
+
 			this._canvas.clear();
-			let area = data.cropArea;
+
 			let width = img.width / 100 * (area[0].x - area[1].x);
 			let height = img.height / 100 * (area[2].y - area[1].y);
 
@@ -95,6 +133,7 @@ class Preview extends Component {
 
 			let nimg = new Image();
 			nimg.src = tmpCanvas.toDataURL();
+			document.querySelector('#imgPreview').src = nimg.src;
 			nimg.onload = () => {
 				let imgInstance = new this.fabric.Image(nimg, {
 					angle: 0,
@@ -153,9 +192,11 @@ class Preview extends Component {
 	render(props, state, context) {
 		return (
 			<LoadingMask loading={this.state.preview == null} text={'loading...'}>
+				<img src="" alt="" id="imgPreview"/>
 				<div style={{ width: '200px', height: 'auto', margin: '0 auto', padding: '10px' }}>
-					<canvas id="canvasPreview"
-							style={{ width: '4cm', height: '4cm', border: '1px solid #ccc' }}></canvas>
+
+					<canvas id="canvasPreview" class="img-thumbnail"
+							style={{ width: '4cm', height: '4cm', border: '1px solid #ccc', background: 'none' }}></canvas>
 					<svg width="3cm" height="4cm" version="1.1" class="img-thumbnail">
 						<image xlink:href={this.state.preview} x="0" y="0" height="100%" width="100%"></image>
 					</svg>

@@ -202,7 +202,8 @@ class Editor extends Component {
 			angle: this.angle,
 			cropArea: this.frameCoords.map((item) => {
 
-				return {x: (item.x ) / imageWidth * 100, y: item.y / imageHeight * 100}
+				//return {x: (item.x ) / imageWidth * 100, y: item.y / imageHeight * 100}
+				return item;
 			})
 		});
 
@@ -312,7 +313,10 @@ class Editor extends Component {
 		this._setRotatedRect(this._cropRect, cropCenter, dx, dy, angleDeg);
 		const points = rotatedRectangle(cropCenter, dx, dy, angleRad);
 		this.frameCoords = points;
-		this.angle = angleDeg;
+		this.angle = {
+			rad: angleRad,
+			deg: angleDeg
+		};
 		const invalidCrop = points.some(pt => {
 			const ptPix = this.screenToPixel(pt);
 			return ptPix.x < 0 || ptPix.x > this._imageWidth || ptPix.y < 0 || ptPix.y > this._imageHeight;
