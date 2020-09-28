@@ -3,9 +3,10 @@ import interact from 'interactjs';
 import { middlePoint, Point, pointsAtDistanceNorm, rotatedRectangle } from '../../model/point';
 import { getCroppingCenter, PhotoDimensions } from '../../model/photodimensions';
 import EventEmitter from 'eventemitter3';
-import { Events } from '../../shared/event-emitter/events';
+import { Constants } from '../../shared/event-emitter/constants';
 import axios from 'axios';
 import LoadingMask from 'react-loadingmask';
+import React from 'preact/compat';
 
 
 class Editor extends Component {
@@ -13,7 +14,7 @@ class Editor extends Component {
 	constructor() {
 		super();
 		// size of circle markers
-		this._crownChinMarkSize = 16;
+		this._crownChinMarkSize = 12;
 		this.state = {
 			crownPosition: {},
 			chinPosition: {},
@@ -61,8 +62,8 @@ class Editor extends Component {
 				'pictureHeight': 40.0,
 				'units': 'mm',
 				'dpi': 600.0,
-				'faceHeight': 31.0,
-				'crownTop': 2.5
+				'faceHeight': 25.0,
+				'crownTop': 4
 			},
 			'backgroundColor': '#eeeeee',
 			'printable': true,
@@ -124,19 +125,24 @@ class Editor extends Component {
 	onLoadImage() {
 		this._imageWidth = this._imgElmt.naturalWidth;
 		this._imageHeight = this._imgElmt.naturalHeight;
+		this.scaledImageWidth = this._imgElmt.clientWidth;
+		this.scaledImageHeight = this._imgElmt.clientHeight;
+		console.log(this.scaledImageWidth, this.scaledImageHeight);
 		if (this._imageWidth > 100 && this._imageHeight > 100) {
 			this._imgElmt.style.visibility = 'visible';
 			this.calculateViewPort();
 			this.zoomFit();
 			this.renderImage();
-			this.setLandMarks(new Point(161, 50), new Point(150, 150));
+			this.setLandMarks(
+				new Point(140, 20),
+				new Point(141  + 1, this._viewPortHeight / 2.5)
+			);
 		}
-		this.props.emitter.emit(Events.LOADED_IMAGE, {
+		this.props.emitter.emit(Constants.LOADED_IMAGE, {
 			viewPortWidth: this._viewPortWidth,
 			viewPortHeight: this._viewPortHeight
 		});
-		this.scaledImageWidth = this._imageArea.getAttribute('width');
-		this.scaledImageHeight = this._imageArea.getAttribute('height');
+
 	}
 
 	calculateViewPort() {
@@ -170,6 +176,7 @@ class Editor extends Component {
 		this.crownPoint = crownPoint;
 		this.chinPoint = chinPoint;
 		this.renderLandMarks();
+		this.updateLandMarks();
 	}
 
 	updateLandMarks() {
@@ -195,14 +202,22 @@ class Editor extends Component {
 			x: (this.chinPoint.x * this._ratio) / imageWidth * 100,
 			y: (this.chinPoint.y * this._ratio) / imageHeight * 100
 		};
-		console.log(this.angle);
-		this.props.emitter.emit(Events.UPDATE_LANDMARK, {
+
+
+		this.props.emitter.emit(Constants.UPDATE_LANDMARK, {
 			crownPosition: crownPoint,
 			chinPosition: chinPoint,
 			angle: this.angle,
 			cropArea: this.frameCoords.map((item) => {
 
+
+				//item = { x: (item.x) / imageWidth * 100, y: item.y / imageHeight * 100 };
 				//return {x: (item.x ) / imageWidth * 100, y: item.y / imageHeight * 100}
+				// remove viewport padding
+				item.x -= Math.abs(imageWidth - this._viewPortWidth) / 2;
+				item.y -= Math.abs(imageHeight - this._viewPortHeight) / 2;
+				// convert to percents
+				return { x: (item.x) / imageWidth * 100, y: item.y / imageHeight * 100 };
 				return item;
 			})
 		});
@@ -274,11 +289,11 @@ class Editor extends Component {
 
 		const faceHeight = p1.distTo(p2);
 		const crownSegment = pointsAtDistanceNorm(p1, p2, faceHeight * 0.5, p1);
-		if(Math.abs(crownSegment[0].x) !== Math.abs(crownSegment[1].x))
+		if (Math.abs(crownSegment[0].x) !== Math.abs(crownSegment[1].x))
 			this._renderSegment(this._crownLine, crownSegment[0], crownSegment[1]);
 
 		const chinSegment = pointsAtDistanceNorm(p1, p2, faceHeight * 0.5, p2);
-		if(Math.abs(chinSegment[0].x) !== Math.abs(chinSegment[1].x))
+		if (Math.abs(chinSegment[0].x) !== Math.abs(chinSegment[1].x))
 			this._renderSegment(this._chinLine, chinSegment[0], chinSegment[1]);
 
 		// Render face ellipse
@@ -321,7 +336,7 @@ class Editor extends Component {
 			const ptPix = this.screenToPixel(pt);
 			return ptPix.x < 0 || ptPix.x > this._imageWidth || ptPix.y < 0 || ptPix.y > this._imageHeight;
 		});
-		this._cropRect.setAttribute('stroke', invalidCrop ? 'red' : 'green');
+		this._cropRect.setAttribute('stroke', invalidCrop ? '#cc3d2e' : '#2ecc8a');
 	}
 
 	_setRotatedRect(svgElmt, center, w, h, angle) {
@@ -344,42 +359,41 @@ class Editor extends Component {
 
 	render(props, state, context) {
 		return <LoadingMask loading={this.state.image == null} text={'loading...'}>
-			<div id="viewport">
+			<div style={{ margin: '0 auto', padding: '10px' }}>
+				<div id="viewport">
+					<img
+						id="inputPhoto"
+						alt="Input Image"
+						title="Input picture"
+						src={this.state.image}
+						onLoad={this.onLoadImage.bind(this)}
+						onError={this.imageLoadFailed.bind(this)}/>
+					<svg className="box" style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}
+						 pointer-events="none">
+						<image class="inputPhoto" xlink:href={this.state.image} x="0" y="0" height="0" width="0"/>
+						<defs>
+							<mask id="mask" x="0" y="0" width="100%" height="100%">
+								<rect id="imageArea" x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+								<rect id="cropArea" x="0" y="0" width="200" height="200" fill="#000"/>
+							</mask>
+						</defs>
+						<rect x="0" y="0" width="1000" height="1000" fill-opacity="0.4" mask="url(#mask)"/>
+						<rect id="cropRect" x="0" y="0" width="200" height="200" fill="none"/>
+						<line id="heightLine" x1="0" y1="0" x2="0" y2="0" className="dimension-line"/>
+						<line id="widthLine" x1="0" y1="0" x2="0" y2="0" className="dimension-line"/>
+						<line id="middleLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
+						<line id="crownLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
+						<line id="chinLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
+						<ellipse id="faceEllipse" cx="100" cy="50" rx="100" ry="50" fill="none" className="annotation"/>
 
-			<img
-				id="inputPhoto"
-				alt="Input Image"
-				title="Input picture"
-				src={this.state.image}
-				onLoad={this.onLoadImage.bind(this)}
-				onError={this.imageLoadFailed.bind(this)}
+					</svg>
+					<div className="landmark" id="crownMark"
+						 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
+					<div className="landmark" id="chinMark"
+						 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
 
-			/>
-			<svg className="box" style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}
-				 pointer-events="none">
-				<image class="inputPhoto" xlink:href={this.state.image} x="0" y="0" height="0" width="0"/>
-				<defs>
-					<mask id="mask" x="0" y="0" width="100%" height="100%">
-						<rect id="imageArea" x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
-						<rect id="cropArea" x="0" y="0" width="200" height="200" fill="#000"/>
-					</mask>
-				</defs>
-				<rect x="0" y="0" width="1000" height="1000" fill-opacity="0.4" mask="url(#mask)"/>
-				<rect id="cropRect" x="0" y="0" width="200" height="200" fill="none"/>
-				<line id="heightLine" x1="0" y1="0" x2="0" y2="0" className="dimension-line"/>
-				<line id="widthLine" x1="0" y1="0" x2="0" y2="0" className="dimension-line"/>
-				<line id="middleLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
-				<line id="crownLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
-				<line id="chinLine" x1="0" y1="0" x2="200" y2="200" className="annotation"/>
-				<ellipse id="faceEllipse" cx="100" cy="50" rx="100" ry="50" fill="none" className="annotation"/>
-
-			</svg>
-			<div className="landmark" id="crownMark"
-				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
-			<div className="landmark" id="chinMark"
-				 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
-
-		</div>
+				</div>
+			</div>
 		</LoadingMask>;
 	}
 }

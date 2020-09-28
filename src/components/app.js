@@ -12,7 +12,7 @@ export default class App extends Component {
 		super();
 		this.state = {
 			view: 'editor',
-			isEditorOpen: true
+			isEditorOpen: false
 		};
 	}
 
@@ -27,17 +27,17 @@ export default class App extends Component {
 						<Fragment>
 
 							{this.state.isEditorOpen &&
-							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }} class="col app-card">
+							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }}
+								 class="col mx-2 app-card d-flex justify-content-center align-items-center">
 								<Editor emitter={this.emitter} imageUrl={this.state.imageUrl}/>
-								<button onClick={this.switchView.bind(this)} type="button" class="btn btn-dark">
-									{this.state.view === 'editor' ? 'Preview' : 'Edit'}
-								</button>
 							</div>
 							}
 
-							<div class="col mx-auto text-centered app-card ">
+							<div class="col mx-2 text-centered  app-card d-flex justify-content-center
+							 align-items-center preview-component">
 								<Preview emitter={this.emitter} imageUrl={this.state.imageUrl}
 										 previewSize={this.props.options.preview.size}
+										 onOrderClick={this.props.options.onOrderClick}
 										 isEditorOpen={this.state.isEditorOpen} showEditor={this.showEditor.bind(this)}/>
 
 							</div>
@@ -47,6 +47,12 @@ export default class App extends Component {
 						:
 						<div class="col">
 							<Welcome tips={this.props.options.tips}/>
+							<div class="text-center mt-3">
+								<button class="btn btn-outline-success"
+								onclick={this.props.options.onRequestPhotoClick.bind(this)}>
+									Загрузить фото
+								</button>
+							</div>
 						</div>
 					}
 
@@ -71,7 +77,7 @@ export default class App extends Component {
 	setImageUrl = url => {
 		this.setState({
 			imageUrl: url,
-			//isEditorOpen: false
+			isEditorOpen: false
 		});
 	};
 }

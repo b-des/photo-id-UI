@@ -123,3 +123,30 @@ export function rotatedRectangle(center, width, height, angle) {
 	}
 	return corners;
 }
+
+export function getBoundingRectangleAfterRotate(w, h, a){
+	let size = {};
+	let rads = a * Math.PI / 180;
+	let c = Math.cos(rads);
+	let s = Math.sin(rads);
+	if (s < 0) {
+		s = -s;
+	}
+	if (c < 0) {
+		c = -c;
+	}
+	size.width = h * s + w * c;
+	size.height = h * c + w * s;
+	return size;
+}
+
+export function transformCoordinateAfterRotate(pivot, point, angle) {
+	// Rotate clockwise, angle in radians
+	let x = Math.round((Math.cos(angle) * (point.x - pivot[0])) -
+		(Math.sin(angle) * (point.y - pivot[1])) +
+		pivot[0]),
+		y = Math.round((Math.sin(angle) * (point.x - pivot[0])) +
+			(Math.cos(angle) * (point.y - pivot[1])) +
+			pivot[1]);
+	return [x, y];
+}

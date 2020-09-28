@@ -1,18 +1,107 @@
 @import "global";
 @import "mixins";
-@import "components/landmark-editor";
-@import 'grid-css-framework/dist/grid.scss';
 
 body{
-  background: #fef1e0;
-  @include lte-desktop{
-    background: #673AB7;
-  }
+  background: #f3f3f4;
+
   .app-card{
-    background: #fbfbfb;
-    border-radius: 10px;
-    box-shadow: 0px 1px 8px -4px #7b7a7a;
+    background: #f3f3f4;
+    //border-radius: 10px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
     padding: 0;
     margin: 10px;
+  }
+
+
+  #inputPhoto {
+    position: absolute;
+    z-index: 0;
+
+  }
+  #viewport {
+    position: relative;
+    max-height: 80vh;
+    min-height: 40vh;
+    border: 1px solid #363434;
+    border-radius: 5px;
+    margin: 0 auto;
+    background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    width: 277px;
+    overflow: hidden;
+    background: white;
+  }
+  @media (max-aspect-ratio: 5/4) {
+    #viewport {
+      height: 50vh;
+    }
+  }
+  @media (min-aspect-ratio: 4/5) {
+    #viewport {
+      height: 280px;
+
+    }
+  }
+  .box {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+  }
+  .annotation {
+    stroke: #aa15a1;
+    stroke-width: 1.5;
+    stroke-dasharray: 5, 2;
+    stroke-opacity: 0.7;
+  }
+  .dimension-text {
+    font-family: sans-serif;
+    font-size: 1.2em;
+    fill: lightgray;
+  }
+  .dimension-line {
+    stroke-width: 1;
+    stroke: lightgray;
+  }
+
+  .landmark {
+    border: 1px solid green;
+    border-radius: 50%;
+    background-color: greenyellow;
+    opacity: 0.6;
+    float: left;
+    position: absolute;
+    visibility: hidden;
+    border: 1px solid #179147;
+    border-radius: 50%;
+    background-color: #69ffce;
+  }
+
+  .preview-component{
+    .previews{
+      text-align: center;
+      .preview{
+        display: inline-block;
+        border: 4px solid #a4a2a2d4;
+        //border-radius: .45rem;
+        cursor: pointer;
+        canvas{
+          cursor: pointer;
+        }
+        &.active{
+          border: 4px solid #41b0e6;
+        }
+      }
+
+      p.label{
+        font-size: 12px;
+        color: #535353;
+      }
+    }
+
+    .text-info{
+      font-size: 14px;
+    }
   }
 }

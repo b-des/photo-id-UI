@@ -15,7 +15,9 @@ class PhotoPassport extends Component{
 			preview:{
 				size: 250
 			},
-			tips:[]
+			tips:[],
+			onRequestPhotoClick: () => {},
+			onOrderClick: () => {},
 		}
 		//options = {...options, defaults};
 		options = Object.assign({}, defaults, options);
