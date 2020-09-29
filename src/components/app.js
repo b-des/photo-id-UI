@@ -4,7 +4,7 @@ import Editor from './editor';
 import Preview from './preview';
 import React from 'preact/compat';
 import Welcome from './welcome';
-
+import photoStandard from '../assets/photo-standards.json'
 
 export default class App extends Component {
 
@@ -12,24 +12,48 @@ export default class App extends Component {
 		super();
 		this.state = {
 			view: 'editor',
-			isEditorOpen: false
+			isEditorOpen: false,
+			selectedStandard: {}
 		};
+	}
+
+	componentDidMount() {
+		this.standards = photoStandard.map(standard => {
+			return (
+				<option value={standard.id}>{standard.text}</option>
+			)
+		});
+
+		let selectedStandard = photoStandard.map(item => item).filter(item => {
+			return item.id === 'ua_visa_photo'
+		});
+
+		if(selectedStandard.length > 0){
+			console.log(selectedStandard);
+			this.setState({
+				selectedStandard: selectedStandard[0]
+			})
+		}
 	}
 
 	render(props, state, context) {
 		this.emitter = new EventEmitter();
 
 
+
+
 		return (
 			<div class="container">
 				<div class="row">
+
 					{this.state.imageUrl ?
 						<Fragment>
 
 							{this.state.isEditorOpen &&
 							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }}
 								 class="col mx-2 app-card d-flex justify-content-center align-items-center">
-								<Editor emitter={this.emitter} imageUrl={this.state.imageUrl}/>
+								<Editor emitter={this.emitter} imageUrl={this.state.imageUrl}
+										standard={this.state.selectedStandard}/>
 							</div>
 							}
 
@@ -38,7 +62,9 @@ export default class App extends Component {
 								<Preview emitter={this.emitter} imageUrl={this.state.imageUrl}
 										 previewSize={this.props.options.preview.size}
 										 onOrderClick={this.props.options.onOrderClick}
-										 isEditorOpen={this.state.isEditorOpen} showEditor={this.showEditor.bind(this)}/>
+										 isEditorOpen={this.state.isEditorOpen}
+										 standard={this.state.selectedStandard}
+										 showEditor={this.showEditor.bind(this)}/>
 
 							</div>
 
@@ -53,6 +79,10 @@ export default class App extends Component {
 									Загрузить фото
 								</button>
 							</div>
+							<select name="standards" id="standards" class="custom-select custom-select-sm mt-3"
+									value={this.state.selectedStandard.id}>
+								{this.standards}
+							</select>
 						</div>
 					}
 

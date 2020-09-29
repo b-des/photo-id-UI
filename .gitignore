@@ -4,5 +4,5 @@ node_modules
 dist
 /*.log
 *.lock
-
+src/assets/*.png
 package-lock.json

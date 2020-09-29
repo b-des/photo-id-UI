@@ -13,7 +13,7 @@ class PhotoPassport extends Component{
 		this.child = createRef();
 		let defaults = {
 			preview:{
-				size: 250
+				size: 200
 			},
 			tips:[],
 			onRequestPhotoClick: () => {},
@@ -24,11 +24,14 @@ class PhotoPassport extends Component{
 
 		const alertOptions = {
 			// you can also just use 'bottom center'
-			position: positions.TOP_RIGHT,
+			position: positions.TOP_CENTER,
 			timeout: 5000,
-			offset: '30px',
+			offset: '20px',
 			// you can also just use 'scale'
-			transition: transitions.SCALE
+			transition: transitions.SCALE,
+			containerStyle:{
+				fontSize: '12px',
+			}
 		}
 
 		let container = document.getElementById(options.container) || document.body;

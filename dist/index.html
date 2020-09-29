@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./styles.css">
 <script type="text/javascript" src="bundle.js"></script></head>
 <body>
-<div id="app" style="width: 50%; margin: 0 auto"></div>
+<div id="app" style="width: auto; margin: 0 auto"></div>
 <script type="text/javascript">
 	let pp = new PhotoPassport({
         container: "app",
@@ -25,13 +25,20 @@
 				title:"По возможности загрузите фото на белом фоне",
 				text:"По возможности загрузите фото на белом фоне",
 			}
-        ]
+        ],
+        onOrderClick: (result) => {
+			console.log(result);
+			console.log('order');
+        },
+		onRequestPhotoClick: () =>{
+			pp.setImage('http://localhost:8080/src/assets/test.jpg')
+        }
     });
 	//pp.setImage('https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg');
 	setTimeout(() =>{
-		pp.setImage('http://localhost:8080/src/assets/test.jpg')
+		pp.setImage('http://localhost:8080/src/assets/2.png')
 		//pp.setImage('https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg')
-    }, 200);
+    }, 500000);
 </script>
 </body>
 </html>

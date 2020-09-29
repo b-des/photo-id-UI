@@ -73,7 +73,7 @@ class Editor extends Component {
 			'comments': ''
 		};
 
-		this._photoDimensions = standard.dimensions;
+		this._photoDimensions = this.props.standard.dimensions;
 
 		interact('.landmark').draggable({
 			// enable inertial throwing
