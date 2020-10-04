@@ -8,7 +8,7 @@ class Welcome extends Component{
 
 	render(props, state, context) {
 		return(
-			<div>
+			<div className={"welcome-container"}>
 				<List tips={this.props.tips} />
 			</div>
 		)

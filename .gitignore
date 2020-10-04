@@ -5,4 +5,5 @@ dist
 /*.log
 *.lock
 src/assets/*.png
+src/assets/*.jpg
 package-lock.json

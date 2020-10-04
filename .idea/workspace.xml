@@ -20,18 +20,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5506e9ab-0725-4106-a35a-2c65c7798fba" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/assets/new-no-bg.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/bundle.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/dist/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/editor/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/editor/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/welcome/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/welcome/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/welcome/list.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/welcome/list.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/style/_mixins.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/style/_mixins.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/style/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/style/styles.scss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +76,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/assets" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Cropper" />
     <property name="list.type.of.created.stylesheet" value="SCSS" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
@@ -97,7 +101,7 @@
       <recent name="D:\Node\photo-passport-UI\src\model" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.SERVE">
+  <component name="RunManager" selected="npm.BUILD">
     <configuration name="BUILD" type="js.build_tools.npm">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -153,7 +157,13 @@
       <workItem from="1601126340926" duration="7147000" />
       <workItem from="1601187539545" duration="27140000" />
       <workItem from="1601274721461" duration="25738000" />
-      <workItem from="1601385402520" duration="13019000" />
+      <workItem from="1601385402520" duration="13050000" />
+      <workItem from="1601446390383" duration="15434000" />
+      <workItem from="1601536405757" duration="3256000" />
+      <workItem from="1601620853053" duration="16412000" />
+      <workItem from="1601715425086" duration="2657000" />
+      <workItem from="1601729607900" duration="6302000" />
+      <workItem from="1601792651089" duration="56000" />
     </task>
     <servers />
   </component>
@@ -172,9 +182,6 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
-  </component>
   <component name="WindowStateProjectService">
     <state x="52" y="160" width="1806" height="793" key="#Live_Templates" timestamp="1601190168849">
       <screen x="0" y="27" width="1920" height="1053" />
@@ -184,21 +191,33 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="418" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1601288049831" />
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1601391436075">
+    <state x="693" y="302" width="524" height="509" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1601456988963">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1601391436075" />
-    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1601391436074">
+    <state x="693" y="302" width="524" height="509" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1601456988963" />
+    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1601726127896">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1601391436074" />
-    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1601391436073">
+    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1601726127896" />
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1601734701201">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1601391436073" />
-    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1601391436075">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1601734701201" />
+    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1601734701201">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1601391436075" />
+    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1601734701201" />
+    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1601734701200">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1601734701200" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1601734701201">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1601734701201" />
+    <state x="651" y="162" width="618" height="783" key="find.popup" timestamp="1601538289447">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="651" y="162" width="618" height="783" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1601538289447" />
   </component>
 </project>

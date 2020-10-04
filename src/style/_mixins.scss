@@ -3,3 +3,15 @@
     @content;
   }
 }
+
+@mixin lte-tablet{
+  @media screen and (max-width: 768px){
+    @content;
+  }
+}
+
+@mixin gte-tablet{
+  @media screen and (min-width: 768px){
+    @content;
+  }
+}

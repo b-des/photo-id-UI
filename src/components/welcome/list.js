@@ -14,7 +14,7 @@ export class List extends Component {
 								</div>
 							}
 							<div >
-								<h5 class="mb-1">{tip.title}</h5>
+								<h6 class="mb-1">{tip.title}</h6>
 								{tip.text ? <p class="mb-1">{tip.text}</p> : ''}
 							</div>
 						</div>

@@ -12,14 +12,20 @@ class Preview extends Component {
 		super();
 		this.image = new Image();
 		this.alert = useAlert();
+		this.dimensionMultiplier = 4;
 		this.state = {
 			preview: null,
 			quantity: 1,
+			corner: 0,
 			loadingAnimation: null,
 			dimensions: {
-				pictureWidth: 30 * 4,
-				pictureHeight: 40 * 4
+				pictureWidth: 0,
+				pictureHeight: 0
 			},
+			noBgImageUrl: null,
+			uid: null,
+			hue: 'color',
+			networkError: false,
 			selectedType: Constants.GENERATED
 		};
 
@@ -27,27 +33,29 @@ class Preview extends Component {
 
 
 	componentDidMount() {
+		let dimensions = {
+			pictureWidth: this.props.standard.dimensions.pictureWidth * this.dimensionMultiplier,
+			pictureHeight: this.props.standard.dimensions.pictureHeight * this.dimensionMultiplier
+		};
+		this.setState({
+			dimensions
+		});
 		this.fabric = fabric.fabric;
 		this._canvas = document.querySelector('#canvasPreview');
 		this._canvas = new this.fabric.Canvas('canvasPreview');
 		this._canvas.hoverCursor = 'pointer';
-		this._canvas.setHeight(this.state.dimensions.pictureHeight);
-		this._canvas.setWidth(this.state.dimensions.pictureWidth);
-
-		if (process.env.NODE_ENV === 'development') {
-			this._tmpCanvas = new this.fabric.Canvas('developPreviewq');
+		this._canvas.selection = false;
+		if (this.props.debug) {
+			this._tmpCanvas = new this.fabric.Canvas('developPreview');
 		}
 		else {
 			this._tmpCanvas = new this.fabric.Canvas();
 		}
 
-		// create image from url
-		this._img = new Image();
-		this._img.src = this.props.imageUrl;
-		this._img.onload = () => {
-			this.createLoadingAnimation();
-		};
+		// set canvas size for custom preview
+		this.setPreviewCanvasSize(dimensions);
 
+		// send request to generate photo
 		this.loadGeneratedPreview({});
 
 	}
@@ -55,12 +63,21 @@ class Preview extends Component {
 
 	componentDidUpdate(prevProps, prevState, nextContext) {
 
-		//
+		// send request to generate photo
 		this.loadGeneratedPreview(prevProps);
+
+		// set canvas size for custom preview
+		if (prevProps.standard !== this.props.standard)
+			this.setPreviewCanvasSize(this.props.standard.dimensions);
 
 		// register events listener when open editor
 		if (this.props.isEditorOpen)
 			this.initEventListeners();
+	}
+
+	setPreviewCanvasSize(dimensions) {
+		this._canvas.setHeight(dimensions.pictureHeight);
+		this._canvas.setWidth(dimensions.pictureWidth);
 	}
 
 	initEventListeners() {
@@ -68,23 +85,21 @@ class Preview extends Component {
 		this.props.emitter.off(Constants.UPDATE_LANDMARK);
 
 		this.props.emitter.on(Constants.LOADED_IMAGE, (data) => {
-			console.log(data);
 		});
 
 		this.props.emitter.on(Constants.UPDATE_LANDMARK, data => this.cropImage(data));
 	}
 
 	cropImage(data) {
-		//let cx = (data.cropArea[1].x + data.cropArea[3].x) / 2;
-		//let cy = (data.cropArea[1].y + data.cropArea[3].y) / 2;
-
+		// calculate size of bounding canvas for image after rotation
 		let nSize = getBoundingRectangleAfterRotate(this._img.width, this._img.height, 90 - data.angle.deg);
 
-		// center of new host size
+		// center of bounding canvas
 		let cx = nSize.width / 2;
 		let cy = nSize.height / 2;
 
 		let cropArea = data.cropArea.map((item) => {
+			// convert point from percents to absolute coordinate
 			item = {
 				x: this._img.width / 100 * item.x,
 				y: this._img.height / 100 * item.y
@@ -101,7 +116,7 @@ class Preview extends Component {
 				y: transformedPoint[1]
 			};
 		});
-		console.log(cropArea);
+
 		let borderOffsetLeft = 0;
 		let borderOffsetTop = cropArea[0].y < 0 ? cropArea[0].y : 0;
 
@@ -111,24 +126,21 @@ class Preview extends Component {
 			angle: 0,
 			width: this._img.width,
 			height: this._img.height,
-			left: (nSize.width - this._img.width) / 2 + borderOffsetLeft,
+			left: (nSize.width - this._img.width) / 2,
 			top: (nSize.height - this._img.height) / 2 - borderOffsetTop,
 			scaleX: 1,
 			scaleY: 1
 		});
-		let angle = 0;
 
-
+		// rotate image inside canvas
 		tmpImgInstance.rotate(90 - data.angle.deg);
 
-		//tmpImgInstance.left = 0;//(img.width - nSize.width) / 2;
-		//tmpImgInstance.top = (nSize.height - img.height) / 2;
 		this._tmpCanvas.setWidth(nSize.width);
 		this._tmpCanvas.setHeight(nSize.height);
 		this._tmpCanvas.backgroundColor = '#fff';
 		this._tmpCanvas.add(tmpImgInstance);
 
-		if (process.env.NODE_ENV === 'development') {
+		if (this.props.debug) {
 			this._tmpCanvas.add(new this.fabric.Line([cropArea[0].x, cropArea[0].y, cropArea[1].x, cropArea[1].y], { stroke: 'red' }));
 			this._tmpCanvas.add(new this.fabric.Line([cropArea[1].x, cropArea[1].y, cropArea[2].x, cropArea[2].y], { stroke: 'red' }));
 			this._tmpCanvas.add(new this.fabric.Line([cropArea[2].x, cropArea[2].y, cropArea[3].x, cropArea[3].y], { stroke: 'red' }));
@@ -149,31 +161,50 @@ class Preview extends Component {
 
 
 		tmpImage.onload = () => {
-			let imgInstance = new this.fabric.Image(tmpImage, {
+			let croppedImgInstance = new this.fabric.Image(tmpImage, {
 				angle: 0,
-				width: cropAreaWidth,
-				height: cropAreaHeight,
+				width: cropAreaWidth ,
+				height: cropAreaHeight ,
 				left: 0,
 				top: 0,
-				scaleX: canvasWidth / cropAreaWidth,
-				scaleY: canvasHeight / cropAreaHeight,
 				cropX: cropArea[1].x,
 				cropY: cropArea[1].y,
 				selectable: false
 
 			});
-			this._canvas.selection = false;
-			this._canvas.add(imgInstance);
+			// put cropped image to tmp canvas
+			// this canvas use for saving custom photo
+			this._tmpCanvas.clear();
+			this._tmpCanvas.setWidth(croppedImgInstance.width);
+			this._tmpCanvas.setHeight(croppedImgInstance.height);
+			this._tmpCanvas.add(croppedImgInstance)
+
+			// copy image for preview
+			let imageCopy = Object.create(croppedImgInstance);
+			// scale image to fit preview canvas size
+			imageCopy.scaleToHeight(canvasHeight)
+			imageCopy.scaleToWidth(canvasWidth)
+			this._canvas.add(imageCopy);
 		};
 	}
 
 	loadGeneratedPreview(prevProps) {
 		if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
-			console.log(this.props.imageUrl);
-			let c = 100;
-			axios.post('http://localhost:5000/api/render-photo', {
+			// create image from url
+			this._img = new Image();
+			this._img.src = this.props.imageUrl;
+			this._img.onload = () => {
+				this.setState({
+					preview: null
+				});
+				this.createLoadingAnimation();
+			};
+
+			let c = this.dimensionMultiplier;
+			axios.post(`${this.props.serviceHost}/api/render-photo`, {
 				url: this.props.imageUrl,
 				previewSize: this.props.previewSize,
+				debug: this.props.debug,
 				dimensions: {
 					width: this.props.standard.dimensions.pictureWidth * c,
 					height: this.props.standard.dimensions.pictureHeight * c,
@@ -181,11 +212,16 @@ class Preview extends Component {
 					chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * c
 				}
 			}).then(response => {
-				console.log(response);
-				if (response.data.result) {
+				console.log(response.data);
+				if (response.data.result.base64) {
 					this.setState({
-						preview: 'data:image/png;base64, ' + response.data.result
+						preview: 'data:image/png;base64, ' + response.data.result.base64,
+						uid: response.data.result.uid,
+						noBgImageUrl: response.data.result.url,
 					});
+					this._img.src = response.data.result.url;
+					this._img.onload = () => {};
+					this.props.onRemoveBackground(response.data.result.url)
 				}
 				else {
 					this.alert.error(response.data.error);
@@ -197,77 +233,82 @@ class Preview extends Component {
 			}).catch(error => {
 				console.log(error);
 				this.setState({
-					preview: ''
+					preview: '',
+					networkError: true
 				});
 				this.alert.error('Извините, возникла сетевая ошибка');
 			});
 		}
 	}
 
-	saveBase64ToImage() {
-		axios.post('http://localhost:5000/api/save-photo-b64', {
-			b64: this._canvas.toDataURL()
-		})
-			.then(response => {
-				console.log(response);
-
-			}).catch(error => {
+	saveCustomImage() {
+		axios.post(`${this.props.serviceHost}/api/save-photo-b64`, {
+			b64: this._tmpCanvas.toDataURL(),
+			uid: this.state.uid,
+			hue: this.state.hue,
+			corner: this.state.corner
+		}).then(response => {
+			console.log(response.data);
+		}).catch(error => {
 			console.log(error);
 			this.alert.error('Извините, возникла сетевая ошибка');
 		});
+	}
+
+	saveGeneratedImage(){
+		let scale = this.dimensionMultiplier * 2;
+		axios.post(`${this.props.serviceHost}/api/render-photo`, {
+			url: this.state.noBgImageUrl,
+			debug: this.props.debug,
+			uid: this.state.uid,
+			hue: this.state.hue,
+			corner: this.state.corner,
+			scale: 2,
+			dimensions: {
+				width: this.props.standard.dimensions.pictureWidth * scale,
+				height: this.props.standard.dimensions.pictureHeight * scale,
+				crown: this.props.standard.dimensions.crownTop * scale,
+				chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * scale
+			}
+		}).then(response => {
+			console.log(response.data);
+		}).catch(error => {
+			console.log(error);
+		})
 	}
 
 	createLoadingAnimation() {
 		let animatedCanvas = new this.fabric.Canvas();
 		animatedCanvas.setWidth(this.state.dimensions.pictureWidth);
 		animatedCanvas.setWidth(this.state.dimensions.pictureHeight);
-		animatedCanvas.setBackgroundColor('red');
-		let ih = this._img.height;
-		let iw = this._img.width;
 
-		let widthRatio = animatedCanvas.getWidth() / this._img.naturalHeight;
-		let heightRatio = animatedCanvas.getHeight() / this._img.naturalWidth;
-		let fw = 0;
-		let fh = 0;
-
-
-		console.log(fw, fh);
 		let image = new this.fabric.Image(this._img, {
 			width: this._img.naturalWidth,
 			height: this._img.naturalHeight,
 			left: 0,
-			top: 0,
-			stroke: 'white',
-			strokeWidth: 2
+			top: 0
 		});
 
-		if (widthRatio > heightRatio) {
-			console.log('Width bigger than height');
-			fw = iw * heightRatio;
-			fh = ih * fw / iw;
+		image.scaleToHeight(animatedCanvas.getHeight(), true);
+		image.scaleToWidth(animatedCanvas.getWidth(), true);
 
-		}
-		else {
-			console.log('height bigger than Width');
-			fh = ih * heightRatio;
-			fw = iw * fh / ih;
-		}
-
-		image.scaleX = fw / this._img.naturalWidth;
-		image.scaleY = fh / this._img.naturalHeight;
+		if (image.height < image.width)
+			image.top = (image.height / image.width) * 2 * 10;
 
 		animatedCanvas.add(image);
 		let scannerLine = new this.fabric.Line([0, 0, animatedCanvas.getWidth(), 0], { stroke: 'red' });
 		animatedCanvas.add(scannerLine);
+
 		let down = true;
+		let step = 5;
 
 		let interval = setInterval(() => {
 
 			if (scannerLine.top >= 0 && !down) {
-				scannerLine.top -= 5;
+				scannerLine.top -= step;
 			}
 			else if (scannerLine.top < animatedCanvas.getHeight() && down) {
-				scannerLine.top += 5;
+				scannerLine.top += step;
 			}
 			else if (scannerLine.top >= animatedCanvas.getHeight()) {
 				down = false;
@@ -276,14 +317,15 @@ class Preview extends Component {
 				down = true;
 			}
 
-			scannerLine.setCoords();
+			if (this.state.preview || this.state.networkError) {
+				animatedCanvas.remove(scannerLine);
+				clearInterval(interval);
+			}
 
 			this.setState({
 				loadingAnimation: animatedCanvas.toDataURL()
 			});
 
-			if (this.state.preview)
-				clearInterval(interval);
 		}, 50);
 
 		this.setState({
@@ -294,6 +336,10 @@ class Preview extends Component {
 
 
 	selectType(type) {
+		if (type === Constants.GENERATED && this.state.networkError) {
+			this.alert.error('Вы не можете выбрать эту опцию');
+			return false;
+		}
 		this.setState({
 			selectedType: type
 		});
@@ -316,27 +362,48 @@ class Preview extends Component {
 		this.setState({ quantity: value });
 	}
 
+	handleCornerChange(event) {
+		this.setState({ corner: event.target.value });
+	}
+
+	handleColorChange(event) {
+		this.setState({ hue: event.target.value });
+		return true;
+	}
+
 	makeOrder() {
 		switch (this.state.selectedType) {
 			case Constants.GENERATED:
+				this.saveGeneratedImage();
 				break;
 			default:
-				console.log(this._canvas.toDataURL());
-				this.saveBase64ToImage();
+				this.saveCustomImage();
 				break;
 		}
 		let response = {
 			quantity: this.state.quantity,
-			type: this.state.selectedType
+			type: this.state.selectedType,
+			corner: this.state.corner,
+			hue: this.state.hue,
+			uid: this.state.uid
 		};
-		this.props.onOrderClick.call(this, response);
+
+		// wait 1 second before call callback function
+		// it helps to finish all processes
+		setTimeout(() => {
+			this.props.onOrderClick.call(this, response);
+		}, 1000)
+		this.alert.success('Заказ принят в обработку');
 	}
 
 	render(props, state, context) {
 		return (
 			<LoadingMask loading={this.state.preview == null} text={'loading...'} style={{ width: '100%' }}>
-				{process.env.NODE_ENV === 'development1' &&
-				<canvas id="developPreview" style={{ background: 'none' }} class="img-thumbnail"/>
+				{this.props.debug &&
+				<div className="text-center debug-canvas-container">
+					<canvas id="developPreview" style={{ background: 'none', margin: '0 auto' }}
+							className="img-thumbnail"/>
+				</div>
 				}
 				<div style={{ margin: '0 auto', padding: '10px' }}>
 
@@ -344,18 +411,18 @@ class Preview extends Component {
 					<div className="container">
 						<div className="row">
 							<div className="col text-center">
-								<p class="h6">Выберите вариант который Вам наиболее подходит: </p>
+								<p className="title">Выберите вариант который Вам наиболее подходит: </p>
 							</div>
 						</div>
 					</div>
 					}
 
-					<div class="container previews">
+					<div className="container previews">
 						<div className="row">
 							<div className="col" style={{ display: this.props.isEditorOpen ? 'block' : 'none' }}>
 								<div
 									className={`preview ${this.state.selectedType === Constants.CUSTOM ? 'active' : ''}`}
-									onclick={this.selectType.bind(this, Constants.CUSTOM)}>
+									onClick={this.selectType.bind(this, Constants.CUSTOM)}>
 									<canvas id="canvasPreview"
 											style={{
 												width: `${this.state.dimensions.pictureWidth}px`,
@@ -363,42 +430,42 @@ class Preview extends Component {
 											}}/>
 
 								</div>
-
-								<p class="label">Ручной режим</p>
+								<p className="label">Ручной режим</p>
 							</div>
 
-
 							<div className="col">
-
 								<div
 									className={`preview ${this.state.selectedType === Constants.GENERATED ? 'active' : ''}`}
-									onclick={this.selectType.bind(this, Constants.GENERATED)}>
+									onClick={this.selectType.bind(this, Constants.GENERATED)}>
 
 									<svg width={`${this.state.dimensions.pictureWidth}px`}
 										 height={`${this.state.dimensions.pictureHeight}px`} version="1.1">
-										<image xlink:href={this.state.preview || this.state.loadingAnimation} x="0"
-											   y="0" height="100%"
-											   width="100%"/>
+
+										<image xlinkHref={this.state.preview || this.state.loadingAnimation}
+											   x="0" y="0" height="100%" width="100%"/>
 									</svg>
-
 								</div>
-
-								{this.props.isEditorOpen &&
-								<p class="label">Автоматический режим</p>
-								}
-
+								{this.props.isEditorOpen && <p className="label">Автоматический режим</p>}
 							</div>
 						</div>
 					</div>
 
 
 					{this.state.preview !== null && !this.props.isEditorOpen &&
-					<div class={'container text-center'}>
-						<p></p>
-						<p class="bd-highlight text-wrap text-info">
-							Не нравится результат?<br/> Вы можете попробовать перейти в ручной режим:
+					<div className={'container text-center'}>
+						<p className="bd-highlight text-wrap text-info mt-2">
+							{this.state.networkError ?
+								<p className="text-danger m-0">
+									Извините, в данный момент сервис не может обработать Вашу фотографию.
+								</p>
+								:
+								<p className="m-0">
+									Не нравится результат?
+								</p>
+							}
+							Вы можете попробовать перейти в ручной режим:
 						</p>
-						<button onclick={this.openEditor.bind(this)} type="button" class="btn btn-dark">
+						<button onClick={this.openEditor.bind(this)} type="button" className="btn btn-dark">
 							Ручной режим
 						</button>
 					</div>
@@ -408,22 +475,53 @@ class Preview extends Component {
 						<div className="row">
 							<div className="col text-right">
 								{(this.state.preview !== null || this.props.isEditorOpen) &&
-								<div class="form-row justify-content-end">
-									<div class="col-auto">
-										<label class="sr-only" for="inlineFormInputGroup">Username</label>
-										<div class="input-group mb-2">
-											<div class="input-group-prepend">
-												<div class="input-group-text">Количество:</div>
+								<div className="form-row justify-content-end align-items-center">
+									<div className="col-md-auto col-sm-1">
+										<div className="input-group mb-2">
+
+											<div className="form-check form-check-inline">
+												<input className="form-check-input" type="radio" name="color"
+													   checked={this.state.hue === 'gray'}
+													   onClick={this.handleColorChange.bind(this)} id="color1"
+													   value="gray"/>
+												<label className="form-check-label" htmlFor="color1">Ч/Б</label>
 											</div>
-											<input type="number" class="form-control" min="1" max="99"
-												   style={{ width: '70px' }}
+											<div className="form-check form-check-inline">
+												<input className="form-check-input" type="radio" name="color"
+													   checked={this.state.hue === 'color'}
+													   onClick={this.handleColorChange.bind(this)} id="color2"
+													   value="color"/>
+												<label className="form-check-label" htmlFor="color2">Цветное</label>
+											</div>
+										</div>
+									</div>
+									<div className="col-md-auto col-sm-1">
+										<div className="input-group mb-2">
+											<select onChange={this.handleCornerChange.bind(this)}
+													className={'custom-select'}>
+												<option value="0" selected>Без уголка</option>
+												<option value="1">Слева вверху</option>
+												<option value="2">Справа вверу</option>
+												<option value="3">Справа внизу</option>
+												<option value="4">Слева внизу</option>
+											</select>
+										</div>
+									</div>
+									<div className="col-md-auto col-sm-1">
+										<div className="input-group mb-2">
+											<div className="input-group-prepend">
+												<div className="input-group-text">
+													<label>Количество:</label>
+												</div>
+											</div>
+											<input type="number" className="form-control" min="1" max="99"
 												   value={this.state.quantity}
 												   onChange={this.handleQuantityChange.bind(this)}/>
 										</div>
 									</div>
-									<div class="col-auto">
-										<button class={'btn btn-outline-primary mb-2'}
-												onclick={this.makeOrder.bind(this)}>
+									<div className="col-md-auto col-sm-1">
+										<button className={'btn btn-outline-primary mb-2 w-100'}
+												onClick={this.makeOrder.bind(this)}>
 											Заказать
 										</button>
 									</div>

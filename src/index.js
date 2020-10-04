@@ -18,9 +18,12 @@ class PhotoPassport extends Component{
 			tips:[],
 			onRequestPhotoClick: () => {},
 			onOrderClick: () => {},
+			container: null,
+			serviceHost: null,
+			debug: false
 		}
 		//options = {...options, defaults};
-		options = Object.assign({}, defaults, options);
+
 
 		const alertOptions = {
 			// you can also just use 'bottom center'
@@ -34,20 +37,35 @@ class PhotoPassport extends Component{
 			}
 		}
 
+		let missingParams = [];
+		Object.entries(defaults).map(item => {
+			if(!options[item[0]]  && item[1] === null){
+				missingParams.push((<p><code>{item[0]}</code></p>))
+			}
+		});
+
+		options = Object.assign({}, defaults, options);
 		let container = document.getElementById(options.container) || document.body;
 		//container.addEventListener('contextmenu', event => event.preventDefault());
-		const Root = () => (
-			<AlertProvider template={AlertTemplate} {...alertOptions}>
-				<App ref={this.child} options={options}/>
-			</AlertProvider>
-		)
-		render(
-			(
-				<AlertProvider template={AlertTemplate} {...alertOptions}>
-					<App ref={this.child} options={options}/>
-				</AlertProvider>
-			), container
-		)
+
+		const Root = () => {
+			if(missingParams.length === 0){
+				return (
+					<AlertProvider template={AlertTemplate} {...alertOptions}>
+						<App ref={this.child} options={options}/>
+					</AlertProvider>
+				)
+			}else{
+				return <div class="text-center">
+					<h6>Missing required options:</h6>
+					<div>
+						{missingParams}
+					</div>
+				</div>
+			}
+		}
+
+		render(<Root />, container)
 	}
 
 	setImage = (imageUrl) => {

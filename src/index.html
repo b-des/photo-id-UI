@@ -12,18 +12,25 @@
 	let pp = new PhotoPassport({
         container: "app",
         preview:{
-        	size: 200,
+        	size: 300,
         },
+        serviceHost: 'http://localhost:5000',
+        debug: false,
         tips:[
             {
-            	icon:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Check_green_icon.svg/1200px-Check_green_icon.svg.png",
+            	icon:"https://www.flaticon.com/svg/static/icons/svg/2922/2922510.svg",
                 title:"На фото должен присутствовать один человек",
                 text:"На фото должен присутствовать один человек",
             },
+            {
+            	icon:"https://www.flaticon.com/svg/static/icons/svg/2598/2598180.svg",
+                title:"Загрузите фото анфас",
+                text:"Фотографируйте верхнюю часть тела, не обрезайте голову",
+            },
 			{
-				icon:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Check_green_icon.svg/1200px-Check_green_icon.svg.png",
+				icon:"https://www.flaticon.com/svg/static/icons/svg/137/137088.svg",
 				title:"По возможности загрузите фото на белом фоне",
-				text:"По возможности загрузите фото на белом фоне",
+				text:"Используйте фото на белом фоне или однородном фоне. Так Ваша фотография будет лучше выглядеть",
 			}
         ],
         onOrderClick: (result) => {
@@ -31,14 +38,12 @@
 			console.log('order');
         },
 		onRequestPhotoClick: () =>{
-			pp.setImage('http://localhost:8080/src/assets/test.jpg')
+			pp.setImage('http://localhost:8080/src/assets/no-bg.jpg')
         }
     });
-	//pp.setImage('https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg');
 	setTimeout(() =>{
-		pp.setImage('http://localhost:8080/src/assets/2.png')
-		//pp.setImage('https://image.shutterstock.com/image-photo/beauty-woman-face-portrait-beautiful-260nw-323982494.jpg')
-    }, 500000);
+		//pp.setImage('http://localhost:8080/src/assets/me.png')
+    }, 10000);
 </script>
 </body>
 </html>

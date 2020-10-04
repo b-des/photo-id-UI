@@ -4,7 +4,7 @@ import Editor from './editor';
 import Preview from './preview';
 import React from 'preact/compat';
 import Welcome from './welcome';
-import photoStandard from '../assets/photo-standards.json'
+import photoStandards from '../assets/photo-standards.json'
 
 export default class App extends Component {
 
@@ -13,25 +13,26 @@ export default class App extends Component {
 		this.state = {
 			view: 'editor',
 			isEditorOpen: false,
-			selectedStandard: {}
+			selectedStandard: null,
+			noBgImageUrl: null
 		};
 	}
 
 	componentDidMount() {
-		this.standards = photoStandard.map(standard => {
+		this.standards = photoStandards.map(standard => {
 			return (
 				<option value={standard.id}>{standard.text}</option>
 			)
 		});
+		this.standards.unshift(<option value="0" disabled selected>Выберите тип документа</option>)
 
-		let selectedStandard = photoStandard.map(item => item).filter(item => {
+		let selectedStandard = photoStandards.map(item => item).filter(item => {
 			return item.id === 'ua_visa_photo'
 		});
 
 		if(selectedStandard.length > 0){
-			console.log(selectedStandard);
 			this.setState({
-				selectedStandard: selectedStandard[0]
+				//selectedStandard: selectedStandard[0]
 			})
 		}
 	}
@@ -44,24 +45,27 @@ export default class App extends Component {
 
 		return (
 			<div class="container">
-				<div class="row">
+				<div class="row justify-content-center">
 
 					{this.state.imageUrl ?
 						<Fragment>
 
 							{this.state.isEditorOpen &&
 							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }}
-								 class="col mx-2 app-card d-flex justify-content-center align-items-center">
-								<Editor emitter={this.emitter} imageUrl={this.state.imageUrl}
+								 class="col-md-4 mx-2 app-card d-flex justify-content-center align-items-center">
+								<Editor emitter={this.emitter} imageUrl={this.state.noBgImageUrl || this.state.imageUrl}
 										standard={this.state.selectedStandard}/>
 							</div>
 							}
 
-							<div class="col mx-2 text-centered  app-card d-flex justify-content-center
+							<div class="col-md-7 mx-2 text-centered  app-card d-flex justify-content-center
 							 align-items-center preview-component">
 								<Preview emitter={this.emitter} imageUrl={this.state.imageUrl}
 										 previewSize={this.props.options.preview.size}
+										 serviceHost={this.props.options.serviceHost}
+										 debug={this.props.options.debug}
 										 onOrderClick={this.props.options.onOrderClick}
+										 onRemoveBackground={url => this.onRemoveBackground.call(this, url)}
 										 isEditorOpen={this.state.isEditorOpen}
 										 standard={this.state.selectedStandard}
 										 showEditor={this.showEditor.bind(this)}/>
@@ -71,18 +75,23 @@ export default class App extends Component {
 
 						</Fragment>
 						:
-						<div class="col">
+						<div class="col mt-3">
 							<Welcome tips={this.props.options.tips}/>
-							<div class="text-center mt-3">
-								<button class="btn btn-outline-success"
-								onclick={this.props.options.onRequestPhotoClick.bind(this)}>
+
+							<p class="label mb-1 mt-3">Выберите тип документа:</p>
+							<select name="standards" id="standards" class="custom-select custom-select-sm"
+									onChange={this.handleStandardChange.bind(this)}>
+								{this.standards}
+							</select>
+
+							{this.state.selectedStandard &&
+							<div className="text-center mt-3">
+								<button className="btn btn-outline-success"
+										onClick={this.props.options.onRequestPhotoClick.bind(this)}>
 									Загрузить фото
 								</button>
 							</div>
-							<select name="standards" id="standards" class="custom-select custom-select-sm mt-3"
-									value={this.state.selectedStandard.id}>
-								{this.standards}
-							</select>
+							}
 						</div>
 					}
 
@@ -91,11 +100,23 @@ export default class App extends Component {
 		);
 	}
 
-	switchView = () => {
+	onRemoveBackground(url){
+		console.log('onRemoveBackground');
 		this.setState({
-			view: this.state.view === 'editor' ? 'preview' : 'editor',
-			imageUrl: this.state.imageUrl
+			noBgImageUrl: url,
 		});
+	}
+
+	handleStandardChange = (event) => {
+		let selectedStandard = photoStandards.map(item => item).filter(item => {
+			return item.id === event.target.value
+		});
+
+		if(selectedStandard.length > 0){
+			this.setState({
+				selectedStandard: selectedStandard[0]
+			})
+		}
 	};
 
 	showEditor = () => {

@@ -52,27 +52,6 @@ class Editor extends Component {
 
 		this._cropRect = document.querySelector('#cropRect');
 
-		let standard = {
-			'id': 'ua_visa_photo',
-			'text': 'Ukraine Visa 3x4 cm (30x40 mm)',
-			'country': 'Ukraine',
-			'docType': 'Visa',
-			'dimensions': {
-				'pictureWidth': 30.0,
-				'pictureHeight': 40.0,
-				'units': 'mm',
-				'dpi': 600.0,
-				'faceHeight': 25.0,
-				'crownTop': 4
-			},
-			'backgroundColor': '#eeeeee',
-			'printable': true,
-			'officialLinks': [
-				'http://mfa.gov.ua/ua/consular-affairs/entering-ukraine/visa-mfa-branches'
-			],
-			'comments': ''
-		};
-
 		this._photoDimensions = this.props.standard.dimensions;
 
 		interact('.landmark').draggable({
@@ -127,7 +106,6 @@ class Editor extends Component {
 		this._imageHeight = this._imgElmt.naturalHeight;
 		this.scaledImageWidth = this._imgElmt.clientWidth;
 		this.scaledImageHeight = this._imgElmt.clientHeight;
-		console.log(this.scaledImageWidth, this.scaledImageHeight);
 		if (this._imageWidth > 100 && this._imageHeight > 100) {
 			this._imgElmt.style.visibility = 'visible';
 			this.calculateViewPort();
@@ -135,14 +113,9 @@ class Editor extends Component {
 			this.renderImage();
 			this.setLandMarks(
 				new Point(140, 20),
-				new Point(141  + 1, this._viewPortHeight / 2.5)
+				new Point(141, this._viewPortHeight / 2.5)
 			);
 		}
-		this.props.emitter.emit(Constants.LOADED_IMAGE, {
-			viewPortWidth: this._viewPortWidth,
-			viewPortHeight: this._viewPortHeight
-		});
-
 	}
 
 	calculateViewPort() {
@@ -218,7 +191,6 @@ class Editor extends Component {
 				item.y -= Math.abs(imageHeight - this._viewPortHeight) / 2;
 				// convert to percents
 				return { x: (item.x) / imageWidth * 100, y: item.y / imageHeight * 100 };
-				return item;
 			})
 		});
 
@@ -358,17 +330,17 @@ class Editor extends Component {
 	}
 
 	render(props, state, context) {
-		return <LoadingMask loading={this.state.image == null} text={'loading...'}>
+		return <LoadingMask loading={this.state.image == null} text={'loading...'} style={{ width: '100%', height: '100%' }}>
 			<div style={{ margin: '0 auto', padding: '10px' }}>
 				<div id="viewport">
 					<img
 						id="inputPhoto"
-						alt="Input Image"
+						alt=""
 						title="Input picture"
 						src={this.state.image}
 						onLoad={this.onLoadImage.bind(this)}
 						onError={this.imageLoadFailed.bind(this)}/>
-					<svg className="box" style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}
+					<svg className="box" style={{ visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden' }}
 						 pointer-events="none">
 						<image class="inputPhoto" xlink:href={this.state.image} x="0" y="0" height="0" width="0"/>
 						<defs>
@@ -388,9 +360,9 @@ class Editor extends Component {
 
 					</svg>
 					<div className="landmark" id="crownMark"
-						 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
+						 style={{ visibility: this.state.landmarkVisibility && this.state.image? 'visible' : 'hidden' }}/>
 					<div className="landmark" id="chinMark"
-						 style={{ visibility: this.state.landmarkVisibility ? 'visible' : 'hidden' }}/>
+						 style={{ visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden' }}/>
 
 				</div>
 			</div>
