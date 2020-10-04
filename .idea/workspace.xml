@@ -20,22 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5506e9ab-0725-4106-a35a-2c65c7798fba" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/assets/new-no-bg.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/bundle.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/dist/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/editor/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/editor/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/photo-standards.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/photo-standards.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/welcome/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/welcome/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/welcome/list.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/welcome/list.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/style/_mixins.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/style/_mixins.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/style/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/style/styles.scss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,7 +152,7 @@
       <workItem from="1601620853053" duration="16412000" />
       <workItem from="1601715425086" duration="2657000" />
       <workItem from="1601729607900" duration="6302000" />
-      <workItem from="1601792651089" duration="56000" />
+      <workItem from="1601792651089" duration="5787000" />
     </task>
     <servers />
   </component>

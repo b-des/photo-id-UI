@@ -13,6 +13,7 @@ class Preview extends Component {
 		this.image = new Image();
 		this.alert = useAlert();
 		this.dimensionMultiplier = 4;
+		this.corners = null;
 		this.state = {
 			preview: null,
 			quantity: 1,
@@ -26,7 +27,8 @@ class Preview extends Component {
 			uid: null,
 			hue: 'color',
 			networkError: false,
-			selectedType: Constants.GENERATED
+			selectedType: Constants.GENERATED,
+			inProcess: false
 		};
 
 	}
@@ -67,8 +69,15 @@ class Preview extends Component {
 		this.loadGeneratedPreview(prevProps);
 
 		// set canvas size for custom preview
-		if (prevProps.standard !== this.props.standard)
+		if (prevProps.standard !== this.props.standard) {
 			this.setPreviewCanvasSize(this.props.standard.dimensions);
+			this.corners = this.props.standard.corners && this.props.standard.corners.length ?
+				this.props.standard.corners.map(corner => {
+					corner = Object.entries(corner)[0];
+					return <option value={corner[0]}>{corner[1]}</option>;
+				}) : null;
+
+		}
 
 		// register events listener when open editor
 		if (this.props.isEditorOpen)
@@ -163,8 +172,8 @@ class Preview extends Component {
 		tmpImage.onload = () => {
 			let croppedImgInstance = new this.fabric.Image(tmpImage, {
 				angle: 0,
-				width: cropAreaWidth ,
-				height: cropAreaHeight ,
+				width: cropAreaWidth,
+				height: cropAreaHeight,
 				left: 0,
 				top: 0,
 				cropX: cropArea[1].x,
@@ -177,13 +186,13 @@ class Preview extends Component {
 			this._tmpCanvas.clear();
 			this._tmpCanvas.setWidth(croppedImgInstance.width);
 			this._tmpCanvas.setHeight(croppedImgInstance.height);
-			this._tmpCanvas.add(croppedImgInstance)
+			this._tmpCanvas.add(croppedImgInstance);
 
 			// copy image for preview
 			let imageCopy = Object.create(croppedImgInstance);
 			// scale image to fit preview canvas size
-			imageCopy.scaleToHeight(canvasHeight)
-			imageCopy.scaleToWidth(canvasWidth)
+			imageCopy.scaleToHeight(canvasHeight);
+			imageCopy.scaleToWidth(canvasWidth);
 			this._canvas.add(imageCopy);
 		};
 	}
@@ -217,11 +226,12 @@ class Preview extends Component {
 					this.setState({
 						preview: 'data:image/png;base64, ' + response.data.result.base64,
 						uid: response.data.result.uid,
-						noBgImageUrl: response.data.result.url,
+						noBgImageUrl: response.data.result.url
 					});
 					this._img.src = response.data.result.url;
-					this._img.onload = () => {};
-					this.props.onRemoveBackground(response.data.result.url)
+					this._img.onload = () => {
+					};
+					this.props.onRemoveBackground(response.data.result.url);
 				}
 				else {
 					this.alert.error(response.data.error);
@@ -242,22 +252,17 @@ class Preview extends Component {
 	}
 
 	saveCustomImage() {
-		axios.post(`${this.props.serviceHost}/api/save-photo-b64`, {
+		return axios.post(`${this.props.serviceHost}/api/save-photo-b64`, {
 			b64: this._tmpCanvas.toDataURL(),
 			uid: this.state.uid,
 			hue: this.state.hue,
 			corner: this.state.corner
-		}).then(response => {
-			console.log(response.data);
-		}).catch(error => {
-			console.log(error);
-			this.alert.error('Извините, возникла сетевая ошибка');
 		});
 	}
 
-	saveGeneratedImage(){
+	saveGeneratedImage() {
 		let scale = this.dimensionMultiplier * 2;
-		axios.post(`${this.props.serviceHost}/api/render-photo`, {
+		return axios.post(`${this.props.serviceHost}/api/render-photo`, {
 			url: this.state.noBgImageUrl,
 			debug: this.props.debug,
 			uid: this.state.uid,
@@ -270,11 +275,7 @@ class Preview extends Component {
 				crown: this.props.standard.dimensions.crownTop * scale,
 				chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * scale
 			}
-		}).then(response => {
-			console.log(response.data);
-		}).catch(error => {
-			console.log(error);
-		})
+		});
 	}
 
 	createLoadingAnimation() {
@@ -371,29 +372,43 @@ class Preview extends Component {
 		return true;
 	}
 
-	makeOrder() {
-		switch (this.state.selectedType) {
-			case Constants.GENERATED:
-				this.saveGeneratedImage();
-				break;
-			default:
-				this.saveCustomImage();
-				break;
-		}
-		let response = {
+	createResultForOrder() {
+		return {
 			quantity: this.state.quantity,
 			type: this.state.selectedType,
 			corner: this.state.corner,
-			hue: this.state.hue,
-			uid: this.state.uid
+			hue: !this.props.standard.colors.color ? 'gray' : this.state.hue,
+			uid: this.state.uid,
+			standard: this.props.standard
 		};
+	}
 
-		// wait 1 second before call callback function
-		// it helps to finish all processes
-		setTimeout(() => {
-			this.props.onOrderClick.call(this, response);
-		}, 1000)
-		this.alert.success('Заказ принят в обработку');
+	makeOrder() {
+		this.setState({
+			inProcess: true
+		});
+		let response = null;
+		switch (this.state.selectedType) {
+			case Constants.GENERATED:
+				response = this.saveGeneratedImage();
+				break;
+			default:
+				response = this.saveCustomImage();
+				break;
+		}
+
+		response.then(result => {
+			let parameters = this.createResultForOrder();
+			this.props.onOrderClick.call(this, parameters);
+			this.alert.success('Заказ принят в обработку');
+		}).catch(error => {
+			this.alert.error('Извините, возникла сетевая ошибка');
+		}).finally(() => {
+			this.setState({
+				inProcess: false
+			});
+		});
+
 	}
 
 	render(props, state, context) {
@@ -479,13 +494,16 @@ class Preview extends Component {
 									<div className="col-md-auto col-sm-1">
 										<div className="input-group mb-2">
 
+											{this.props.standard.colors.gray &&
 											<div className="form-check form-check-inline">
 												<input className="form-check-input" type="radio" name="color"
-													   checked={this.state.hue === 'gray'}
+													   checked={this.state.hue === 'gray' || !this.props.standard.colors.color}
 													   onClick={this.handleColorChange.bind(this)} id="color1"
 													   value="gray"/>
 												<label className="form-check-label" htmlFor="color1">Ч/Б</label>
 											</div>
+											}
+											{this.props.standard.colors.color &&
 											<div className="form-check form-check-inline">
 												<input className="form-check-input" type="radio" name="color"
 													   checked={this.state.hue === 'color'}
@@ -493,20 +511,19 @@ class Preview extends Component {
 													   value="color"/>
 												<label className="form-check-label" htmlFor="color2">Цветное</label>
 											</div>
+											}
 										</div>
 									</div>
+									{this.corners &&
 									<div className="col-md-auto col-sm-1">
 										<div className="input-group mb-2">
 											<select onChange={this.handleCornerChange.bind(this)}
 													className={'custom-select'}>
-												<option value="0" selected>Без уголка</option>
-												<option value="1">Слева вверху</option>
-												<option value="2">Справа вверу</option>
-												<option value="3">Справа внизу</option>
-												<option value="4">Слева внизу</option>
+												{this.corners}
 											</select>
 										</div>
 									</div>
+									}
 									<div className="col-md-auto col-sm-1">
 										<div className="input-group mb-2">
 											<div className="input-group-prepend">
@@ -521,8 +538,16 @@ class Preview extends Component {
 									</div>
 									<div className="col-md-auto col-sm-1">
 										<button className={'btn btn-outline-primary mb-2 w-100'}
-												onClick={this.makeOrder.bind(this)}>
-											Заказать
+												disabled={this.state.inProcess} onClick={this.makeOrder.bind(this)}>
+											{this.state.inProcess ?
+												<div>
+													<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"/>
+													Оформление...
+												</div>
+												:
+												'Заказать'
+											}
+
 										</button>
 									</div>
 								</div>

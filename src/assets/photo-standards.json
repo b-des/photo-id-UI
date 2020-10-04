@@ -25,19 +25,31 @@
     "id": "af_e_tazkira_3x4cm_photo",
     "text": "Afghanistan ID Card (e-tazkira) 3x4cm",
     "country": "Afghanistan",
-    "docType": "ID card / Identification",
     "dimensions": {
       "pictureWidth": 30.0,
       "pictureHeight": 40.0,
-      "units": "mm",
-      "dpi": 600.0,
       "faceHeight": 30.0,
       "crownTop": 2.5
     },
-    "backgroundColor": "#ffffff",
-    "printable": true,
-    "officialLinks": [],
-    "comments": ""
+    "price":{
+      "value": 10,
+      "currency": "грн"
+    },
+    "corners": [
+      {
+        "0": "Без уголка"
+      },
+      {
+        "1": "Слева вверху"
+      },
+      {
+        "2": "Справа вверу"
+      },
+      {
+        "3": "Справа внизу"
+      }
+    ],
+    "colors": {"gray":"Ч/Б", "color":"Цветное"}
   },
   {
     "id": "af_passport_5x5_photo",
