@@ -22,7 +22,13 @@ class PhotoPassport extends Component{
 			container: null, // id of container
 			serviceHost: null, // url for backend
 			debug: false, // debug mode
-			standards: photoStandards // list of objects with document specification
+			standards: photoStandards, // list of objects with document specification
+			photoRestriction: {
+				minWidth: 500,
+				minHeight: 400,
+				maxWidth: 5000,
+				maxHeight: 5000,
+			}
 		}
 
 		const alertOptions = {

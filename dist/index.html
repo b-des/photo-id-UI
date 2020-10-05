@@ -43,17 +43,19 @@
 		{
 			"id": "ua_e_tazkira_3x4cm_photo",
 			"text": "Ukrainian ID Card (e-tazkira) 3x4cm",
-			"country": "Украина",
+			"country": "Ukraine",
 			"dimensions": {
-				"pictureWidth": 30.0,
-				"pictureHeight": 40.0,
-				"faceHeight": 30.0,
-				"crownTop": 2.5
+				"pictureWidth": 394,
+				"pictureHeight": 506,
+				"faceHeight": 500,
+				"crownTop": 1,
+                "units":"px"
 			},
 			"price":{
 				"value": 10,
 				"currency": "грн"
 			},
+            "extension":"bmp",
 			"corners": [
 				{
 					"0": "Без уголка"
@@ -92,7 +94,7 @@
 				text:"Используйте фото на белом фоне или однородном фоне. Так Ваша фотография будет лучше выглядеть",
 			}
         ],
-        //standards: standards,
+        standards: standards,
 		countries: ["Ukraine", "Afghanistan"],
         onOrderClick: (result) => {
 			console.log(result);

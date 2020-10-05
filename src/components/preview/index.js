@@ -35,13 +35,18 @@ class Preview extends Component {
 
 
 	componentDidMount() {
+		// if dimension of final photo is present in pixels
+		if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
+			this.dimensionMultiplier = 0.3;
+		}
+
 		let dimensions = {
-			pictureWidth: this.props.standard.dimensions.pictureWidth * this.dimensionMultiplier,
-			pictureHeight: this.props.standard.dimensions.pictureHeight * this.dimensionMultiplier
+			pictureWidth: parseInt(this.props.standard.dimensions.pictureWidth * this.dimensionMultiplier),
+			pictureHeight: parseInt(this.props.standard.dimensions.pictureHeight * this.dimensionMultiplier)
 		};
 
 		// initialize canvas for preview
-		this.initPreviewCanvas(dimensions)
+		this.initPreviewCanvas(dimensions);
 
 		// set canvas size for custom preview
 		this.setPreviewCanvasSize(dimensions);
@@ -70,11 +75,11 @@ class Preview extends Component {
 			this.initEventListeners();
 
 		// call callback when changed options
-		if(this.state.preview)
+		if (this.state.preview)
 			this.changedOptions();
 	}
 
-	initPreviewCanvas(dimensions){
+	initPreviewCanvas(dimensions) {
 		this.setState({
 			dimensions
 		});
@@ -106,7 +111,7 @@ class Preview extends Component {
 		this._canvas.setWidth(dimensions.pictureWidth);
 	}
 
-	generateCornersOptionsList(){
+	generateCornersOptionsList() {
 		this.corners = this.props.standard.corners && this.props.standard.corners.length ?
 			this.props.standard.corners.map(corner => {
 				corner = Object.entries(corner)[0];
@@ -229,12 +234,13 @@ class Preview extends Component {
 			let c = this.dimensionMultiplier;
 			let chin = 0;
 			let crown = 0;
-			if(this.props.standard.dimensions.crownTop){
+			if (this.props.standard.dimensions.crownTop) {
 				crown = this.props.standard.dimensions.crownTop * c;
-				chin =  (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * c;
-			}else if(this.props.standard.dimensions.bottomEyeLine){
-				crown = (this.props.standard.dimensions.bottomEyeLine / 10) ;
-				chin =  (this.props.standard.dimensions.faceHeight + crown) * c;
+				chin = (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * c;
+			}
+			else if (this.props.standard.dimensions.bottomEyeLine) {
+				crown = (this.props.standard.dimensions.bottomEyeLine / 10);
+				chin = (this.props.standard.dimensions.faceHeight + crown) * c;
 				crown *= c;
 			}
 			axios.post(`${this.props.serviceHost}/api/render-photo`, {
@@ -248,8 +254,21 @@ class Preview extends Component {
 					chin: chin
 				}
 			}).then(response => {
-				console.log(response.data);
-				if (response.data.result.base64) {
+				if (!response.data.result) {
+					if(response.data.error){
+						switch (response.data.error){
+							case Constants.NO_FACE:
+								this.alert.error('На фото не обнаружено лица');
+								this.props.reset();
+								break;
+							case Constants.MORE_ONE_FACES:
+								this.alert.error('На фото обнаружено более одного лица');
+								this.props.reset();
+								break;
+						}
+					}
+
+				} else if (response.data.result.base64) {
 					this.setState({
 						preview: 'data:image/png;base64, ' + response.data.result.base64,
 						uid: response.data.result.uid,
@@ -259,37 +278,58 @@ class Preview extends Component {
 					this._img.onload = () => {
 					};
 					this.props.onRemoveBackground(response.data.result.url);
-				}
-				else {
-					this.alert.error(response.data.error);
-					this.setState({
-						preview: ''
-					});
+				} else {
+					this.networkError();
 				}
 
 			}).catch(error => {
-				console.log(error);
-				this.setState({
-					preview: '',
-					networkError: true
-				});
-				this.alert.error('Извините, возникла сетевая ошибка');
+				this.networkError();
 			});
 		}
 	}
 
+	networkError(){
+		this.setState({
+			preview: '',
+			networkError: true
+		});
+		this.alert.error('Извините, возникла сетевая ошибка');
+	}
+
 	saveCustomImage() {
-		return axios.post(`${this.props.serviceHost}/api/save-photo-b64`, {
+		let payload = {
 			b64: this._tmpCanvas.toDataURL(),
 			uid: this.state.uid,
 			hue: this.state.hue,
 			corner: this.state.corner
-		});
+		};
+
+		// if dimension of final photo is present in pixels
+		// save image with exact size
+		if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
+			payload['size'] = [
+				this.props.standard.dimensions.pictureWidth,
+				this.props.standard.dimensions.pictureHeight
+			];
+		}
+
+		if (this.props.standard.extension)
+			payload['ext'] = this.props.standard.extension;
+
+
+		return axios.post(`${this.props.serviceHost}/api/save-photo-b64`, payload);
 	}
 
 	saveGeneratedImage() {
 		let scale = this.dimensionMultiplier * 2;
-		return axios.post(`${this.props.serviceHost}/api/render-photo`, {
+
+		// if dimension of final photo is present in pixels
+		// save image without scaling
+		if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
+			scale = 1;
+		}
+
+		let payload = {
 			url: this.state.noBgImageUrl,
 			debug: this.props.debug,
 			uid: this.state.uid,
@@ -302,7 +342,12 @@ class Preview extends Component {
 				crown: this.props.standard.dimensions.crownTop * scale,
 				chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * scale
 			}
-		});
+		};
+
+		if (this.props.standard.extension)
+			payload['ext'] = this.props.standard.extension;
+
+		return axios.post(`${this.props.serviceHost}/api/render-photo`, payload);
 	}
 
 	createLoadingAnimation() {
@@ -411,7 +456,7 @@ class Preview extends Component {
 		};
 	}
 
-	changedOptions(){
+	changedOptions() {
 		let parameters = this.createResultForOrder();
 		this.props.onOptionChanged.call(this, parameters);
 	}
@@ -574,8 +619,8 @@ class Preview extends Component {
 												disabled={this.state.inProcess} onClick={this.makeOrder.bind(this)}>
 											{this.state.inProcess ?
 												<div>
-													<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"/>
-													Оформление...
+													<span className="spinner-border spinner-border-sm" role="status"
+														  aria-hidden="true"/>
 												</div>
 												:
 												'Заказать'

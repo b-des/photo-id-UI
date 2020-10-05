@@ -1,23 +1,28 @@
 import { h, Component, Fragment } from 'preact';
 import EventEmitter from 'eventemitter3';
+import React from 'preact/compat';
+import { positions, useAlert } from 'react-alert';
 import Editor from './editor';
 import Preview from './preview';
-import React from 'preact/compat';
 import Welcome from './welcome';
-import photoStandards from '../assets/photo-standards.json';
 
+const initialState = {
+	view: 'editor',
+	isEditorOpen: false,
+	selectedStandard: null,
+	noBgImageUrl: null,
+	imageUrl: null,
+	country: null,
+	isPhotoMeetRequirements: true,
+	standards: [],
+	photoSize:{}
+};
 export default class App extends Component {
 
 	constructor() {
 		super();
-		this.state = {
-			view: 'editor',
-			isEditorOpen: false,
-			selectedStandard: null,
-			noBgImageUrl: null,
-			country: null,
-			standards: []
-		};
+		this.state = initialState;
+		this.restrictions = {};
 	}
 
 	componentDidMount() {
@@ -36,83 +41,12 @@ export default class App extends Component {
 			selectedStandard: null,
 		});
 
+		this.restrictions = this.props.options.photoRestriction;
 	}
 
 
-	render(props, state, context) {
-		this.emitter = new EventEmitter();
-
-		return (
-			<div class="container">
-				<div class="row justify-content-center">
-
-					{this.state.imageUrl ?
-						<Fragment>
-
-							{this.state.isEditorOpen &&
-							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }}
-								 class="col-md-4 mx-2 app-card d-flex justify-content-center align-items-center">
-								<Editor emitter={this.emitter} imageUrl={this.state.noBgImageUrl || this.state.imageUrl}
-										standard={this.state.selectedStandard}/>
-							</div>
-							}
-
-							<div class="col-md-7 mx-2 text-centered  app-card d-flex justify-content-center
-							 align-items-center preview-component">
-								<Preview emitter={this.emitter} imageUrl={this.state.imageUrl}
-										 previewSize={this.props.options.preview.size}
-										 serviceHost={this.props.options.serviceHost}
-										 debug={this.props.options.debug}
-										 onOrderClick={this.props.options.onOrderClick}
-										 onOptionChanged={this.props.options.onOptionChanged}
-										 onRemoveBackground={url => this.onRemoveBackground.call(this, url)}
-										 isEditorOpen={this.state.isEditorOpen}
-										 standard={this.state.selectedStandard}
-										 showEditor={this.showEditor.bind(this)}/>
-
-							</div>
-
-
-						</Fragment>
-						:
-						<div class="col mt-3">
-							<Welcome tips={this.props.options.tips}/>
-
-							<div className="row">
-								<div className="col">
-									<p className="label mb-1 mt-3">Выберите cтрану:</p>
-									<select name="standards" id="standards" className="custom-select custom-select-sm"
-											onChange={this.handleCountryChange.bind(this)}>
-										{this.countries}
-									</select>
-								</div>
-								{this.state.country &&
-								<div className="col">
-									<p className="label mb-1 mt-3">Выберите тип документа:</p>
-									<select name="standards" id="standards" className="custom-select custom-select-sm"
-											value={this.state.selectedStandard === null ? 0 : this.state.selectedStandard.id}
-											onChange={this.handleStandardChange.bind(this)}>
-										{this.state.standards}
-									</select>
-								</div>
-								}
-							</div>
-
-
-							{this.state.selectedStandard &&
-							<div className="text-center mt-3">
-								<button className="btn btn-outline-success"
-										onClick={this.props.options.onRequestPhotoClick.bind(this)}>
-									Загрузить фото
-								</button>
-							</div>
-							}
-						</div>
-					}
-
-				</div>
-			</div>
-		);
+	reset() {
+		this.setState(initialState);
 	}
 
 	onRemoveBackground(url) {
@@ -161,9 +95,121 @@ export default class App extends Component {
 	};
 
 	setImageUrl = url => {
-		this.setState({
-			imageUrl: url,
-			isEditorOpen: false
-		});
+		useAlert().info("Проверяем фотографию", {timeout: 2000});
+		let tmpImage = new Image();
+		tmpImage.src = url;
+		tmpImage.onload = () => {
+			let isPhotoMeetRequirements =
+				tmpImage.naturalWidth >= this.restrictions.minWidth &&
+				tmpImage.naturalWidth <= this.restrictions.maxWidth &&
+				tmpImage.naturalHeight >= this.restrictions.minHeight &&
+				tmpImage.naturalHeight <= this.restrictions.maxHeight;
+
+			if(!isPhotoMeetRequirements){
+				this.setState({
+					imageUrl: null,
+					isPhotoMeetRequirements: false,
+					photoSize: {
+						width: tmpImage.naturalWidth,
+						height: tmpImage.naturalHeight,
+					}
+				});
+				useAlert().error("Извините, Ваша фотография не соответствует требованиям")
+			}else{
+				this.setState({
+					imageUrl: url,
+					isPhotoMeetRequirements: true,
+					isEditorOpen: false
+				});
+			}
+		}
 	};
+
+	render(props, state, context) {
+		this.emitter = new EventEmitter();
+
+		return (
+			<div className="container">
+				<div className="row justify-content-center">
+
+					{this.state.imageUrl ?
+						<Fragment>
+
+							{this.state.isEditorOpen &&
+							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }}
+								 className="col-md-4 mx-2 app-card d-flex justify-content-center align-items-center">
+								<Editor emitter={this.emitter} imageUrl={this.state.noBgImageUrl || this.state.imageUrl}
+										standard={this.state.selectedStandard}/>
+							</div>
+							}
+
+							<div className="col-md-7 mx-2 text-centered  app-card d-flex justify-content-center
+							 align-items-center preview-component">
+								<Preview emitter={this.emitter} imageUrl={this.state.imageUrl}
+										 previewSize={this.props.options.preview.size}
+										 serviceHost={this.props.options.serviceHost}
+										 debug={this.props.options.debug}
+										 onOrderClick={this.props.options.onOrderClick}
+										 onOptionChanged={this.props.options.onOptionChanged}
+										 onRemoveBackground={url => this.onRemoveBackground.call(this, url)}
+										 isEditorOpen={this.state.isEditorOpen}
+										 standard={this.state.selectedStandard}
+										 reset={this.reset.bind(this)}
+										 showEditor={this.showEditor.bind(this)}/>
+
+							</div>
+
+
+						</Fragment>
+						:
+						<div className="col mt-3">
+							<Welcome tips={this.props.options.tips}/>
+
+							<div className="row">
+								<div className="col">
+									<p className="label mb-1 mt-3">Выберите cтрану:</p>
+									<select name="standards" id="standards" className="custom-select custom-select-sm"
+											onChange={this.handleCountryChange.bind(this)}>
+										{this.countries}
+									</select>
+								</div>
+								{this.state.country &&
+								<div className="col">
+									<p className="label mb-1 mt-3">Выберите тип документа:</p>
+									<select name="standards" id="standards" className="custom-select custom-select-sm"
+											value={this.state.selectedStandard === null ? 0 : this.state.selectedStandard.id}
+											onChange={this.handleStandardChange.bind(this)}>
+										{this.state.standards}
+									</select>
+								</div>
+								}
+							</div>
+
+							{!this.state.isPhotoMeetRequirements &&
+								<div className="alert alert-warning mt-3" role="alert">
+									<p className="mb-0">Загружаемая фотография должна соответствовать следующим
+										требованиям:</p>
+									<ul>
+										<li>Не меньше {this.restrictions.minWidth} x {this.restrictions.minHeight}px</li>
+										<li>Не больше {this.restrictions.maxWidth} x {this.restrictions.maxHeight}px</li>
+									</ul>
+									<hr/>
+									<p>Размер Вашего фото: {this.state.photoSize.width} x {this.state.photoSize.height}px</p>
+								</div>
+							}
+							{this.state.selectedStandard &&
+							<div className="text-center mt-3">
+								<button className="btn btn-outline-success"
+										onClick={this.props.options.onRequestPhotoClick.bind(this)}>
+									Загрузить фото
+								</button>
+							</div>
+							}
+						</div>
+					}
+
+				</div>
+			</div>
+		);
+	}
 }
