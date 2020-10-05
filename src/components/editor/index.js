@@ -14,7 +14,7 @@ class Editor extends Component {
 	constructor() {
 		super();
 		// size of circle markers
-		this._crownChinMarkSize = 12;
+		this._crownChinMarkSize = window.innerHeight > window.innerWidth ? 22 : 12;
 		this.state = {
 			crownPosition: {},
 			chinPosition: {},

@@ -9,6 +9,65 @@
 <body>
 <div id="app" style="width: auto; margin: 0 auto"></div>
 <script type="text/javascript">
+    let standards = [
+		{
+			"id": "af_e_tazkira_3x4cm_photo",
+			"text": "Afghanistan ID Card (e-tazkira) 3x4cm",
+			"country": "Afghanistan",
+			"dimensions": {
+				"pictureWidth": 30.0,
+				"pictureHeight": 40.0,
+				"faceHeight": 30.0,
+				"crownTop": 2.5
+			},
+			"price":{
+				"value": 10,
+				"currency": "грн"
+			},
+			"corners": [
+				{
+					"0": "Без уголка"
+				},
+				{
+					"1": "Слева вверху"
+				},
+				{
+					"2": "Справа вверу"
+				},
+				{
+					"3": "Справа внизу"
+				}
+			],
+			"colors": {"gray":"Ч/Б", "color":"Цветное"}
+		},
+		{
+			"id": "ua_e_tazkira_3x4cm_photo",
+			"text": "Ukrainian ID Card (e-tazkira) 3x4cm",
+			"country": "Украина",
+			"dimensions": {
+				"pictureWidth": 30.0,
+				"pictureHeight": 40.0,
+				"faceHeight": 30.0,
+				"crownTop": 2.5
+			},
+			"price":{
+				"value": 10,
+				"currency": "грн"
+			},
+			"corners": [
+				{
+					"0": "Без уголка"
+				},
+				{
+					"2": "Справа вверу"
+				},
+				{
+					"3": "Справа внизу"
+				}
+			],
+			"colors": {"gray":"Ч/Б", "color":"Цветное"}
+		}
+    ];
 	let pp = new PhotoPassport({
         container: "app",
         preview:{
@@ -33,12 +92,17 @@
 				text:"Используйте фото на белом фоне или однородном фоне. Так Ваша фотография будет лучше выглядеть",
 			}
         ],
+        //standards: standards,
+		countries: ["Ukraine", "Afghanistan"],
         onOrderClick: (result) => {
 			console.log(result);
 			console.log('order');
         },
 		onRequestPhotoClick: () =>{
 			pp.setImage('http://localhost:8080/src/assets/no-bg.jpg')
+        },
+		onOptionChanged: (options) => {
+			console.log(options);
         }
     });
 	setTimeout(() =>{

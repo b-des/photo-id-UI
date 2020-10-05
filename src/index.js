@@ -1,11 +1,11 @@
 import './style/styles.scss'
 import "react-loadingmask/dist/react-loadingmask.css";
-
 import {h, Component, render, createRef} from 'preact';
 import App from './components/app'
 import React from 'preact/compat';
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
+import photoStandards from './assets/photo-standards.json'
 
 class PhotoPassport extends Component{
 	constructor(options){
@@ -13,24 +13,22 @@ class PhotoPassport extends Component{
 		this.child = createRef();
 		let defaults = {
 			preview:{
-				size: 200
+				size: 200 // size of generated preview
 			},
-			tips:[],
-			onRequestPhotoClick: () => {},
-			onOrderClick: () => {},
-			container: null,
-			serviceHost: null,
-			debug: false
+			tips:[],// list of tips for welcome screen
+			onRequestPhotoClick: () => {}, // callback fire when user click add photo
+			onOrderClick: () => {}, // callback for order click
+			onOptionChanged: () => {}, // callback for option change
+			container: null, // id of container
+			serviceHost: null, // url for backend
+			debug: false, // debug mode
+			standards: photoStandards // list of objects with document specification
 		}
-		//options = {...options, defaults};
-
 
 		const alertOptions = {
-			// you can also just use 'bottom center'
 			position: positions.TOP_CENTER,
 			timeout: 5000,
 			offset: '20px',
-			// you can also just use 'scale'
 			transition: transitions.SCALE,
 			containerStyle:{
 				fontSize: '12px',
@@ -46,7 +44,7 @@ class PhotoPassport extends Component{
 
 		options = Object.assign({}, defaults, options);
 		let container = document.getElementById(options.container) || document.body;
-		//container.addEventListener('contextmenu', event => event.preventDefault());
+		container.addEventListener('contextmenu', event => event.preventDefault());
 
 		const Root = () => {
 			if(missingParams.length === 0){

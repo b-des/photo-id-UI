@@ -39,23 +39,15 @@ class Preview extends Component {
 			pictureWidth: this.props.standard.dimensions.pictureWidth * this.dimensionMultiplier,
 			pictureHeight: this.props.standard.dimensions.pictureHeight * this.dimensionMultiplier
 		};
-		this.setState({
-			dimensions
-		});
-		this.fabric = fabric.fabric;
-		this._canvas = document.querySelector('#canvasPreview');
-		this._canvas = new this.fabric.Canvas('canvasPreview');
-		this._canvas.hoverCursor = 'pointer';
-		this._canvas.selection = false;
-		if (this.props.debug) {
-			this._tmpCanvas = new this.fabric.Canvas('developPreview');
-		}
-		else {
-			this._tmpCanvas = new this.fabric.Canvas();
-		}
+
+		// initialize canvas for preview
+		this.initPreviewCanvas(dimensions)
 
 		// set canvas size for custom preview
 		this.setPreviewCanvasSize(dimensions);
+
+		// generate list of corner options
+		this.generateCornersOptionsList();
 
 		// send request to generate photo
 		this.loadGeneratedPreview({});
@@ -71,22 +63,32 @@ class Preview extends Component {
 		// set canvas size for custom preview
 		if (prevProps.standard !== this.props.standard) {
 			this.setPreviewCanvasSize(this.props.standard.dimensions);
-			this.corners = this.props.standard.corners && this.props.standard.corners.length ?
-				this.props.standard.corners.map(corner => {
-					corner = Object.entries(corner)[0];
-					return <option value={corner[0]}>{corner[1]}</option>;
-				}) : null;
-
 		}
 
 		// register events listener when open editor
 		if (this.props.isEditorOpen)
 			this.initEventListeners();
+
+		// call callback when changed options
+		if(this.state.preview)
+			this.changedOptions();
 	}
 
-	setPreviewCanvasSize(dimensions) {
-		this._canvas.setHeight(dimensions.pictureHeight);
-		this._canvas.setWidth(dimensions.pictureWidth);
+	initPreviewCanvas(dimensions){
+		this.setState({
+			dimensions
+		});
+		this.fabric = fabric.fabric;
+		this._canvas = document.querySelector('#canvasPreview');
+		this._canvas = new this.fabric.Canvas('canvasPreview');
+		this._canvas.hoverCursor = 'pointer';
+		this._canvas.selection = false;
+		if (this.props.debug) {
+			this._tmpCanvas = new this.fabric.Canvas('developPreview');
+		}
+		else {
+			this._tmpCanvas = new this.fabric.Canvas();
+		}
 	}
 
 	initEventListeners() {
@@ -98,6 +100,20 @@ class Preview extends Component {
 
 		this.props.emitter.on(Constants.UPDATE_LANDMARK, data => this.cropImage(data));
 	}
+
+	setPreviewCanvasSize(dimensions) {
+		this._canvas.setHeight(dimensions.pictureHeight);
+		this._canvas.setWidth(dimensions.pictureWidth);
+	}
+
+	generateCornersOptionsList(){
+		this.corners = this.props.standard.corners && this.props.standard.corners.length ?
+			this.props.standard.corners.map(corner => {
+				corner = Object.entries(corner)[0];
+				return <option value={corner[0]}>{corner[1]}</option>;
+			}) : null;
+	}
+
 
 	cropImage(data) {
 		// calculate size of bounding canvas for image after rotation
@@ -206,10 +222,21 @@ class Preview extends Component {
 				this.setState({
 					preview: null
 				});
+
 				this.createLoadingAnimation();
 			};
 
 			let c = this.dimensionMultiplier;
+			let chin = 0;
+			let crown = 0;
+			if(this.props.standard.dimensions.crownTop){
+				crown = this.props.standard.dimensions.crownTop * c;
+				chin =  (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * c;
+			}else if(this.props.standard.dimensions.bottomEyeLine){
+				crown = (this.props.standard.dimensions.bottomEyeLine / 10) ;
+				chin =  (this.props.standard.dimensions.faceHeight + crown) * c;
+				crown *= c;
+			}
 			axios.post(`${this.props.serviceHost}/api/render-photo`, {
 				url: this.props.imageUrl,
 				previewSize: this.props.previewSize,
@@ -217,8 +244,8 @@ class Preview extends Component {
 				dimensions: {
 					width: this.props.standard.dimensions.pictureWidth * c,
 					height: this.props.standard.dimensions.pictureHeight * c,
-					crown: this.props.standard.dimensions.crownTop * c,
-					chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * c
+					crown: crown,
+					chin: chin
 				}
 			}).then(response => {
 				console.log(response.data);
@@ -361,6 +388,7 @@ class Preview extends Component {
 			return false;
 		}
 		this.setState({ quantity: value });
+		let parameters = this.createResultForOrder();
 	}
 
 	handleCornerChange(event) {
@@ -369,7 +397,7 @@ class Preview extends Component {
 
 	handleColorChange(event) {
 		this.setState({ hue: event.target.value });
-		return true;
+
 	}
 
 	createResultForOrder() {
@@ -381,6 +409,11 @@ class Preview extends Component {
 			uid: this.state.uid,
 			standard: this.props.standard
 		};
+	}
+
+	changedOptions(){
+		let parameters = this.createResultForOrder();
+		this.props.onOptionChanged.call(this, parameters);
 	}
 
 	makeOrder() {
