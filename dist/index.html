@@ -9,6 +9,27 @@
 <body>
 <div id="app" style="width: auto; margin: 0 auto"></div>
 <script type="text/javascript">
+	let eOpts =   [
+		{
+			"name":"Ретуширование",
+            "id": "99",
+			"options": [
+				{
+					"id": "0",
+					"value": "Без ретуши"
+				},
+				{
+					"id": "1",
+					"value": "Ретушь 1"
+				},
+				{
+					"id": "2",
+					"value": "Ретушь 2"
+				}
+			]
+		}
+	];
+
     let standards = [
 		{
 			"id": "af_e_tazkira_3x4cm_photo",
@@ -20,24 +41,12 @@
 				"faceHeight": 30.0,
 				"crownTop": 2.5
 			},
+			"extraOptions": eOpts,
 			"price":{
 				"value": 10,
 				"currency": "грн"
 			},
-			"corners": [
-				{
-					"0": "Без уголка"
-				},
-				{
-					"1": "Слева вверху"
-				},
-				{
-					"2": "Справа вверу"
-				},
-				{
-					"3": "Справа внизу"
-				}
-			],
+			"corners": {"none": "None", "BR":"Bottom right"},
 			"colors": {"gray":"Ч/Б", "color":"Цветное"}
 		},
 		{
@@ -75,7 +84,7 @@
         preview:{
         	size: 300,
         },
-        serviceHost: 'http://localhost:5000',
+        serviceHost: 'http://localhost:4000',
         debug: false,
         tips:[
             {
@@ -101,10 +110,11 @@
 			console.log('order');
         },
 		onRequestPhotoClick: () =>{
-			pp.setImage('http://localhost:8080/src/assets/no-bg.jpg')
+			pp.setImage('http://localhost:8080/src/assets/Robert-Downey-Jr-c.jpg')
         },
 		onOptionChanged: (options) => {
 			console.log(options);
+			console.log(JSON.stringify(options));
         }
     });
 	setTimeout(() =>{

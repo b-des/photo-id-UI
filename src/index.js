@@ -23,8 +23,9 @@ class PhotoPassport extends Component{
 			serviceHost: null, // url for backend
 			debug: false, // debug mode
 			standards: photoStandards, // list of objects with document specification
+			corners: {},
 			photoRestriction: {
-				minWidth: 500,
+				minWidth: 425,
 				minHeight: 400,
 				maxWidth: 5000,
 				maxHeight: 5000,

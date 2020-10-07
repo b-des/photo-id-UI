@@ -1,7 +1,7 @@
-import { h, Component, Fragment } from 'preact';
+import { Component, Fragment, h} from 'preact';
 import EventEmitter from 'eventemitter3';
 import React from 'preact/compat';
-import { positions, useAlert } from 'react-alert';
+import { useAlert } from 'react-alert';
 import Editor from './editor';
 import Preview from './preview';
 import Welcome from './welcome';
@@ -63,6 +63,7 @@ export default class App extends Component {
 			selectedStandard = selectedStandard[0];
 			if(!selectedStandard.colors)
 				selectedStandard['colors'] = {"gray":"Ч/Б", "color":"Цветное"}
+
 			this.setState({
 				selectedStandard: selectedStandard
 			});

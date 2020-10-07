@@ -6,6 +6,7 @@ import { useAlert } from 'react-alert';
 import React from 'preact/compat';
 import fabric from 'fabric/dist/fabric.min';
 import { getBoundingRectangleAfterRotate, transformCoordinateAfterRotate } from '../../model/point';
+import Options from './options';
 
 class Preview extends Component {
 	constructor() {
@@ -23,6 +24,7 @@ class Preview extends Component {
 				pictureWidth: 0,
 				pictureHeight: 0
 			},
+			originalImageUrl: null,
 			noBgImageUrl: null,
 			uid: null,
 			hue: 'color',
@@ -112,9 +114,8 @@ class Preview extends Component {
 	}
 
 	generateCornersOptionsList() {
-		this.corners = this.props.standard.corners && this.props.standard.corners.length ?
-			this.props.standard.corners.map(corner => {
-				corner = Object.entries(corner)[0];
+		this.corners = this.props.standard.corners ?
+			Object.entries(this.props.standard.corners).map(corner => {
 				return <option value={corner[0]}>{corner[1]}</option>;
 			}) : null;
 	}
@@ -225,7 +226,8 @@ class Preview extends Component {
 			this._img.src = this.props.imageUrl;
 			this._img.onload = () => {
 				this.setState({
-					preview: null
+					preview: null,
+					originalImageUrl: this.props.imageUrl
 				});
 
 				this.createLoadingAnimation();
@@ -452,12 +454,19 @@ class Preview extends Component {
 			corner: this.state.corner,
 			hue: !this.props.standard.colors.color ? 'gray' : this.state.hue,
 			uid: this.state.uid,
-			standard: this.props.standard
+			standard: this.props.standard,
+			originalImageUrl: this.state.originalImageUrl,
+			extraOptions: []
 		};
 	}
 
-	changedOptions() {
+	changedOptions(extraOption) {
 		let parameters = this.createResultForOrder();
+
+		if(extraOption){
+			parameters.extraOptions.indexOf(extraOption) === -1 ? parameters.extraOptions.push(extraOption) : true
+		}
+
 		this.props.onOptionChanged.call(this, parameters);
 	}
 
@@ -563,11 +572,23 @@ class Preview extends Component {
 						</button>
 					</div>
 					}
+					<div className="container mt-3">
+						<div className="row text-right">
+							<div className="col">
+								<div className="form-row justify-content-end align-items-center">
+									<Options
+										onOptionChanged={option => this.changedOptions.call(this, option)}
+										options={this.props.standard.extraOptions}/>
+								</div>
+							</div>
+
+						</div>
+					</div>
 
 					<div className="container mt-3">
 						<div className="row">
 							<div className="col text-right">
-								{(this.state.preview !== null || this.props.isEditorOpen) &&
+								{//(this.state.preview !== null || this.props.isEditorOpen) &&
 								<div className="form-row justify-content-end align-items-center">
 									<div className="col-md-auto col-sm-1">
 										<div className="input-group mb-2">

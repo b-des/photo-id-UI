@@ -9909,6 +9909,29 @@
     "backgroundColor": "#ffffff",
     "printable": true,
     "officialLinks": [],
-    "comments": " "
+    "comments": " ",
+    "extraOptions": [
+      {
+        "name":"Ретуширование",
+        "options": [
+          {
+            "id": "0",
+            "value": "Без ретуши"
+          },
+          {
+            "id": "1",
+            "value": "Ретушь 1"
+          },
+          {
+            "id": "2",
+            "value": "Ретушь 2"
+          }
+        ]
+      },
+
+      {
+
+      }
+    ]
   }
 ]
