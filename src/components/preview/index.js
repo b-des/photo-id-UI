@@ -18,7 +18,7 @@ class Preview extends Component {
 		this.state = {
 			preview: null,
 			quantity: 1,
-			corner: 0,
+			corner: 'none',
 			loadingAnimation: null,
 			dimensions: {
 				pictureWidth: 0,
@@ -572,18 +572,18 @@ class Preview extends Component {
 						</button>
 					</div>
 					}
-					<div className="container mt-3">
-						<div className="row text-right">
-							<div className="col">
-								<div className="form-row justify-content-end align-items-center">
-									<Options
-										onOptionChanged={option => this.changedOptions.call(this, option)}
-										options={this.props.standard.extraOptions}/>
+					{this.props.standard.extraOptions &&
+						<div className="container mt-3">
+							<div className="row">
+								<div className="col">
+										<Options
+											onOptionChanged={option => this.changedOptions.call(this, option)}
+											options={this.props.standard.extraOptions}/>
 								</div>
-							</div>
 
+							</div>
 						</div>
-					</div>
+					}
 
 					<div className="container mt-3">
 						<div className="row">
@@ -636,6 +636,7 @@ class Preview extends Component {
 										</div>
 									</div>
 									<div className="col-md-auto col-sm-1">
+
 										<button className={'btn btn-outline-primary mb-2 w-100'}
 												disabled={this.state.inProcess} onClick={this.makeOrder.bind(this)}>
 											{this.state.inProcess ?
@@ -644,7 +645,7 @@ class Preview extends Component {
 														  aria-hidden="true"/>
 												</div>
 												:
-												'Заказать'
+												`Заказать (${this.props.price})`
 											}
 
 										</button>

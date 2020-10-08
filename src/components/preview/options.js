@@ -9,7 +9,17 @@ export default class Options extends Component{
 
 		let extraOptions = this.props.options.map(extraOption => {
 			return <div className="col-md-auto col-sm-1">
+				<div className="form-group">
+					<label htmlFor="exampleInputEmail1">
+						{extraOption.name} &nbsp;
+						{extraOption.description &&
+							<span className="badge badge-info" title={extraOption.description} data-toggle="tooltip">
+								?
+							</span>
+						}
+					</label>
 				<div className="input-group mb-2">
+
 					<select onChange={this.handleOptionChanged.bind(this)}
 							className={'custom-select'}>
 						{
@@ -18,11 +28,18 @@ export default class Options extends Component{
 						}
 					</select>
 				</div>
+				</div>
 			</div>
 		});
 
 		this.setState({
 			options: extraOptions
+		});
+	}
+
+	componentDidUpdate(previousProps, previousState, snapshot) {
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
 		})
 	}
 
@@ -32,7 +49,7 @@ export default class Options extends Component{
 	}
 
 	render(props, state, context) {
-		return <div className={"options"}>
+		return <div className={"options form-row justify-content-end align-items-center"}>
 			{this.state.options}
 		</div>
 	}

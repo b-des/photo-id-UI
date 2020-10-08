@@ -7175,6 +7175,14 @@ var options_Options = /*#__PURE__*/function (_Component) {
         return Object(preact_module["h"])("div", {
           className: "col-md-auto col-sm-1"
         }, Object(preact_module["h"])("div", {
+          className: "form-group"
+        }, Object(preact_module["h"])("label", {
+          htmlFor: "exampleInputEmail1"
+        }, extraOption.name, " \xA0", extraOption.description && Object(preact_module["h"])("span", {
+          className: "badge badge-info",
+          title: extraOption.description,
+          "data-toggle": "tooltip"
+        }, "?")), Object(preact_module["h"])("div", {
           className: "input-group mb-2"
         }, Object(preact_module["h"])("select", {
           onChange: _this.handleOptionChanged.bind(_this),
@@ -7183,10 +7191,17 @@ var options_Options = /*#__PURE__*/function (_Component) {
           return Object(preact_module["h"])("option", {
             value: "[".concat(extraOption.id, ", ").concat(option.id, "]")
           }, option.value);
-        }))));
+        })))));
       });
       this.setState({
         options: extraOptions
+      });
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(previousProps, previousState, snapshot) {
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
       });
     }
   }, {
@@ -7199,7 +7214,7 @@ var options_Options = /*#__PURE__*/function (_Component) {
     key: "render",
     value: function render(props, state, context) {
       return Object(preact_module["h"])("div", {
-        className: "options"
+        className: "options form-row justify-content-end align-items-center"
       }, this.state.options);
     }
   }]);
@@ -7259,7 +7274,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
     _this.state = {
       preview: null,
       quantity: 1,
-      corner: 0,
+      corner: 'none',
       loadingAnimation: null,
       dimensions: {
         pictureWidth: 0,
@@ -7847,20 +7862,18 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         onClick: this.openEditor.bind(this),
         type: "button",
         className: "btn btn-dark"
-      }, "\u0420\u0443\u0447\u043D\u043E\u0439 \u0440\u0435\u0436\u0438\u043C")), Object(preact_module["h"])("div", {
+      }, "\u0420\u0443\u0447\u043D\u043E\u0439 \u0440\u0435\u0436\u0438\u043C")), this.props.standard.extraOptions && Object(preact_module["h"])("div", {
         className: "container mt-3"
       }, Object(preact_module["h"])("div", {
-        className: "row text-right"
+        className: "row"
       }, Object(preact_module["h"])("div", {
         className: "col"
-      }, Object(preact_module["h"])("div", {
-        className: "form-row justify-content-end align-items-center"
       }, Object(preact_module["h"])(options_Options, {
         onOptionChanged: function onOptionChanged(option) {
           return _this7.changedOptions.call(_this7, option);
         },
         options: this.props.standard.extraOptions
-      }))))), Object(preact_module["h"])("div", {
+      })))), Object(preact_module["h"])("div", {
         className: "container mt-3"
       }, Object(preact_module["h"])("div", {
         className: "row"
@@ -7931,7 +7944,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         className: "spinner-border spinner-border-sm",
         role: "status",
         "aria-hidden": "true"
-      })) : 'Заказать'))))))));
+      })) : "\u0417\u0430\u043A\u0430\u0437\u0430\u0442\u044C (".concat(this.props.price, ")")))))))));
     }
   }]);
 
@@ -8094,7 +8107,8 @@ var initialState = {
   country: null,
   isPhotoMeetRequirements: true,
   standards: [],
-  photoSize: {}
+  photoSize: {},
+  price: null
 };
 
 var app_App = /*#__PURE__*/function (_Component) {
@@ -8124,7 +8138,8 @@ var app_App = /*#__PURE__*/function (_Component) {
         };
 
         _this.setState({
-          selectedStandard: selectedStandard
+          selectedStandard: selectedStandard,
+          price: "".concat(selectedStandard.price.value, " ").concat(selectedStandard.price.currency)
         });
       }
     };
@@ -8207,7 +8222,7 @@ var app_App = /*#__PURE__*/function (_Component) {
         value: "0",
         disabled: true,
         selected: true
-      }, "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 c\u0442\u0440\u0430\u043D\u0443"));
+      }, "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043D\u0443"));
       this.setState({
         selectedStandard: null
       });
@@ -8223,6 +8238,13 @@ var app_App = /*#__PURE__*/function (_Component) {
     value: function onRemoveBackground(url) {
       this.setState({
         noBgImageUrl: url
+      });
+    }
+  }, {
+    key: "updatePrice",
+    value: function updatePrice(price) {
+      this.setState({
+        price: price
       });
     }
   }, {
@@ -8260,6 +8282,7 @@ var app_App = /*#__PURE__*/function (_Component) {
         isEditorOpen: this.state.isEditorOpen,
         standard: this.state.selectedStandard,
         reset: this.reset.bind(this),
+        price: this.state.price,
         showEditor: this.showEditor.bind(this)
       }))) : Object(preact_module["h"])("div", {
         className: "col mt-3"
@@ -8271,7 +8294,7 @@ var app_App = /*#__PURE__*/function (_Component) {
         className: "col"
       }, Object(preact_module["h"])("p", {
         className: "label mb-1 mt-3"
-      }, "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 c\u0442\u0440\u0430\u043D\u0443:"), Object(preact_module["h"])("select", {
+      }, "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043D\u0443:"), Object(preact_module["h"])("select", {
         name: "standards",
         id: "standards",
         className: "custom-select custom-select-sm",
@@ -8495,6 +8518,10 @@ var src_PhotoPassport = /*#__PURE__*/function (_Component) {
 
     _this.setImage = function (imageUrl) {
       _this.child.current.setImageUrl(imageUrl);
+    };
+
+    _this.updatePrice = function (price) {
+      _this.child.current.updatePrice(price);
     };
 
     _this.child = Object(preact_module["g" /* createRef */])();

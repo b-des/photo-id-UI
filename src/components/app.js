@@ -15,7 +15,8 @@ const initialState = {
 	country: null,
 	isPhotoMeetRequirements: true,
 	standards: [],
-	photoSize:{}
+	photoSize:{},
+	price: null
 };
 export default class App extends Component {
 
@@ -34,7 +35,7 @@ export default class App extends Component {
 				<option value={country}>{country}</option>
 			);
 		});
-		this.countries.unshift(<option value="0" disabled selected>Выберите cтрану</option>);
+		this.countries.unshift(<option value="0" disabled selected>Выберите страну</option>);
 
 
 		this.setState({
@@ -65,9 +66,11 @@ export default class App extends Component {
 				selectedStandard['colors'] = {"gray":"Ч/Б", "color":"Цветное"}
 
 			this.setState({
-				selectedStandard: selectedStandard
+				selectedStandard: selectedStandard,
+				price: `${selectedStandard.price.value} ${selectedStandard.price.currency}`
 			});
 		}
+
 	};
 
 	handleCountryChange = (event) => {
@@ -126,6 +129,12 @@ export default class App extends Component {
 		}
 	};
 
+	updatePrice(price){
+		this.setState({
+			price: price
+		})
+	}
+
 	render(props, state, context) {
 		this.emitter = new EventEmitter();
 
@@ -156,6 +165,7 @@ export default class App extends Component {
 										 isEditorOpen={this.state.isEditorOpen}
 										 standard={this.state.selectedStandard}
 										 reset={this.reset.bind(this)}
+										 price={this.state.price}
 										 showEditor={this.showEditor.bind(this)}/>
 
 							</div>
@@ -168,7 +178,7 @@ export default class App extends Component {
 
 							<div className="row">
 								<div className="col">
-									<p className="label mb-1 mt-3">Выберите cтрану:</p>
+									<p className="label mb-1 mt-3">Выберите страну:</p>
 									<select name="standards" id="standards" className="custom-select custom-select-sm"
 											onChange={this.handleCountryChange.bind(this)}>
 										{this.countries}

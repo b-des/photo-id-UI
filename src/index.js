@@ -75,7 +75,10 @@ class PhotoPassport extends Component{
 
 	setImage = (imageUrl) => {
 		this.child.current.setImageUrl(imageUrl);
+	}
 
+	updatePrice = (price) => {
+		this.child.current.updatePrice(price);
 	}
 
 }
