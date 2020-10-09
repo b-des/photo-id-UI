@@ -7,7 +7,25 @@ import React from 'preact/compat';
 import fabric from 'fabric/dist/fabric.min';
 import { getBoundingRectangleAfterRotate, transformCoordinateAfterRotate } from '../../model/point';
 import Options from './options';
-
+const initialState = {
+	preview: null,
+	quantity: 1,
+	corner: {value: 'none'},
+	loadingAnimation: null,
+	dimensions: {
+		pictureWidth: 0,
+		pictureHeight: 0
+	},
+	originalImageUrl: null,
+	noBgImageUrl: null,
+	uid: null,
+	hue: {value: 'color'},
+	extraOptions: [],
+	networkError: false,
+	selectedType: Constants.GENERATED,
+	inProcess: false,
+	isOptionsChanged: false
+}
 class Preview extends Component {
 	constructor() {
 		super();
@@ -15,23 +33,8 @@ class Preview extends Component {
 		this.alert = useAlert();
 		this.dimensionMultiplier = 4;
 		this.corners = null;
-		this.state = {
-			preview: null,
-			quantity: 1,
-			corner: 'none',
-			loadingAnimation: null,
-			dimensions: {
-				pictureWidth: 0,
-				pictureHeight: 0
-			},
-			originalImageUrl: null,
-			noBgImageUrl: null,
-			uid: null,
-			hue: 'color',
-			networkError: false,
-			selectedType: Constants.GENERATED,
-			inProcess: false
-		};
+		this.colors = null;
+		this.state = initialState;
 
 	}
 
@@ -43,8 +46,8 @@ class Preview extends Component {
 		}
 
 		let dimensions = {
-			pictureWidth: parseInt(this.props.standard.dimensions.pictureWidth * this.dimensionMultiplier),
-			pictureHeight: parseInt(this.props.standard.dimensions.pictureHeight * this.dimensionMultiplier)
+			pictureWidth: parseFloat(this.props.standard.dimensions.pictureWidth) * this.dimensionMultiplier,
+			pictureHeight: parseFloat(this.props.standard.dimensions.pictureHeight) * this.dimensionMultiplier
 		};
 
 		// initialize canvas for preview
@@ -76,9 +79,9 @@ class Preview extends Component {
 		if (this.props.isEditorOpen)
 			this.initEventListeners();
 
-		// call callback when changed options
-		if (this.state.preview)
-			this.changedOptions();
+		// call callback on option changed
+		if(this.state.isOptionsChanged)
+			this.sendOptionsToCallback();
 	}
 
 	initPreviewCanvas(dimensions) {
@@ -114,9 +117,27 @@ class Preview extends Component {
 	}
 
 	generateCornersOptionsList() {
-		this.corners = this.props.standard.corners ?
-			Object.entries(this.props.standard.corners).map(corner => {
-				return <option value={corner[0]}>{corner[1]}</option>;
+		let corner = this.props.standard.corners.length ? this.props.standard.corners[0] : initialState.corner;
+		let hue = this.props.standard.colors.length ? this.props.standard.colors[0] : initialState.color;
+		this.setState({
+			corner: corner,
+			hue: hue,
+			isOptionsChanged: true
+		})
+		this.corners = this.props.standard.corners && this.props.standard.corners.length ?
+			this.props.standard.corners.map(corner => {
+				return <option value={corner.id}>{corner.name}</option>;
+			}) : null;
+
+		this.colors = this.props.standard.colors && this.props.standard.colors.length ?
+			this.props.standard.colors.map(color => {
+				return <div className="form-check form-check-inline">
+					<input className="form-check-input" type="radio" name="color"
+						   checked={hue.value === color.value}
+						   onClick={this.handleColorChange.bind(this)} id={`color-${color.id}`}
+						   value={color.id}/>
+					<label className="form-check-label" htmlFor={`color-${color.id}`}>{color.name}</label>
+				</div>
 			}) : null;
 	}
 
@@ -302,8 +323,8 @@ class Preview extends Component {
 		let payload = {
 			b64: this._tmpCanvas.toDataURL(),
 			uid: this.state.uid,
-			hue: this.state.hue,
-			corner: this.state.corner
+			hue: this.state.hue.value,
+			corner: this.state.corner.value
 		};
 
 		// if dimension of final photo is present in pixels
@@ -335,8 +356,8 @@ class Preview extends Component {
 			url: this.state.noBgImageUrl,
 			debug: this.props.debug,
 			uid: this.state.uid,
-			hue: this.state.hue,
-			corner: this.state.corner,
+			hue: this.state.hue.value,
+			corner: this.state.corner.value,
 			scale: 2,
 			dimensions: {
 				width: this.props.standard.dimensions.pictureWidth * scale,
@@ -416,14 +437,16 @@ class Preview extends Component {
 			return false;
 		}
 		this.setState({
-			selectedType: type
+			selectedType: type,
+			isOptionsChanged: true
 		});
 	}
 
 	openEditor() {
 
 		this.setState({
-			selectedType: Constants.CUSTOM
+			selectedType: Constants.CUSTOM,
+			isOptionsChanged: true
 		});
 		this.props.showEditor.call(this);
 	}
@@ -434,42 +457,91 @@ class Preview extends Component {
 			this.alert.error('Неверное значение');
 			return false;
 		}
-		this.setState({ quantity: value });
-		let parameters = this.createResultForOrder();
+		this.setState({
+			quantity: value,
+			isOptionsChanged: true
+		});
 	}
 
 	handleCornerChange(event) {
-		this.setState({ corner: event.target.value });
+		let corner = this.props.standard.corners
+			.filter(corner => corner.id === event.target.value);
+		this.setState({
+			corner: corner.length ? corner[0] : {value: 'none'},
+			isOptionsChanged: true
+		});
 	}
 
 	handleColorChange(event) {
-		this.setState({ hue: event.target.value });
-
+		let color = this.props.standard.colors
+			.filter(color => color.id === event.target.value);
+		this.setState({
+			hue: color.length ? color[0] : {value: 'color'},
+			isOptionsChanged: true
+		});
 	}
 
+	/**
+	 * Create object with selected options and params
+	 * @returns {}
+	 */
 	createResultForOrder() {
+		let corner = this.props.standard.corners.filter(corner => corner.value === this.state.corner.value);
+		let hue = this.props.standard.colors.filter(color => color.value === this.state.hue.value);
+
+		if(corner.length)
+			corner = corner[0]
+		if(hue.length)
+			hue = hue[0]
 		return {
 			quantity: this.state.quantity,
 			type: this.state.selectedType,
 			corner: this.state.corner,
-			hue: !this.props.standard.colors.color ? 'gray' : this.state.hue,
+			hue: this.state.hue,
 			uid: this.state.uid,
 			standard: this.props.standard,
 			originalImageUrl: this.state.originalImageUrl,
-			extraOptions: []
+			extraOptions: this.state.extraOptions
 		};
 	}
 
-	changedOptions(extraOption) {
+	/**
+	 * Send options to callback whe option changed
+	 * @param extraOption
+	 */
+	sendOptionsToCallback(extraOption) {
+		// get selected options
 		let parameters = this.createResultForOrder();
 
+		// if changed additional option
+		// update state
 		if(extraOption){
-			parameters.extraOptions.indexOf(extraOption) === -1 ? parameters.extraOptions.push(extraOption) : true
+
+			let index = parameters.extraOptions.findIndex(obj => obj[0] === extraOption[0]);
+			if(index < 0){
+				parameters.extraOptions.push(extraOption);
+			}else{
+				parameters.extraOptions[index] = extraOption
+			}
+
+			this.setState({
+				extraOptions: parameters.extraOptions
+			})
 		}
 
+		// fire callback
 		this.props.onOptionChanged.call(this, parameters);
+
+		// set flag to false
+		// after sending options to callback
+		this.setState({
+			isOptionsChanged: false
+		});
 	}
 
+	/**
+	 * Call method when click order button
+	 */
 	makeOrder() {
 		this.setState({
 			inProcess: true
@@ -577,7 +649,7 @@ class Preview extends Component {
 							<div className="row">
 								<div className="col">
 										<Options
-											onOptionChanged={option => this.changedOptions.call(this, option)}
+											onOptionChanged={option => this.sendOptionsToCallback.call(this, option)}
 											options={this.props.standard.extraOptions}/>
 								</div>
 
@@ -590,38 +662,22 @@ class Preview extends Component {
 							<div className="col text-right">
 								{//(this.state.preview !== null || this.props.isEditorOpen) &&
 								<div className="form-row justify-content-end align-items-center">
-									<div className="col-md-auto col-sm-1">
-										<div className="input-group mb-2">
-
-											{this.props.standard.colors.gray &&
-											<div className="form-check form-check-inline">
-												<input className="form-check-input" type="radio" name="color"
-													   checked={this.state.hue === 'gray' || !this.props.standard.colors.color}
-													   onClick={this.handleColorChange.bind(this)} id="color1"
-													   value="gray"/>
-												<label className="form-check-label" htmlFor="color1">Ч/Б</label>
+									{this.colors &&
+										<div className="col-md-auto col-sm-1">
+											<div className="input-group mb-2">
+												{this.colors}
 											</div>
-											}
-											{this.props.standard.colors.color &&
-											<div className="form-check form-check-inline">
-												<input className="form-check-input" type="radio" name="color"
-													   checked={this.state.hue === 'color'}
-													   onClick={this.handleColorChange.bind(this)} id="color2"
-													   value="color"/>
-												<label className="form-check-label" htmlFor="color2">Цветное</label>
-											</div>
-											}
 										</div>
-									</div>
+									}
 									{this.corners &&
-									<div className="col-md-auto col-sm-1">
-										<div className="input-group mb-2">
-											<select onChange={this.handleCornerChange.bind(this)}
-													className={'custom-select'}>
-												{this.corners}
-											</select>
+										<div className="col-md-auto col-sm-1">
+											<div className="input-group mb-2">
+												<select onChange={this.handleCornerChange.bind(this)}
+														className={'custom-select'}>
+													{this.corners}
+												</select>
+											</div>
 										</div>
-									</div>
 									}
 									<div className="col-md-auto col-sm-1">
 										<div className="input-group mb-2">

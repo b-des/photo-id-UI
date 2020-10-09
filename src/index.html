@@ -31,7 +31,57 @@
 					"value": "Ретушь 2"
 				}
 			]
+		},
+		{
+			"name":"Ретуширование2",
+			"id": "100",
+			"description": "Что то тут про ретуширование2",
+			"options": [
+				{
+					"id": "0",
+					"value": "Без ретуши"
+				},
+				{
+					"id": "1",
+					"value": "Ретушь 1"
+				},
+				{
+					"id": "2",
+					"value": "Ретушь 2"
+				}
+			]
 		}
+	];
+	let corners = [
+		{
+			"name": "Без уголка",
+			"id": "12",
+			"value": "none"
+		},
+		{
+			"name": "Снизу слева",
+			"id": "13",
+			"value": "BL"
+		},
+		{
+			"name": "Снизу справа",
+			"id": "15",
+			"value": "BR"
+		}
+	];
+
+	let colors = [
+		{
+			"name": "Ч.Б.",
+			"id": "10",
+			"value": "gray"
+		},
+		{
+			"name": "Цветное",
+			"id": "9",
+			"value": "color"
+		},
+
 	];
 
     let standards = [
@@ -45,13 +95,13 @@
 				"faceHeight": 30.0,
 				"crownTop": 2.5
 			},
-			"extraOptions": [eOpts[0],eOpts[0]],
+			"extraOptions": eOpts,
 			"price":{
 				"value": 10,
 				"currency": "грн"
 			},
-			"corners": {"none": "None", "BR":"Bottom right"},
-			"colors": {"gray":"Ч/Б", "color":"Цветное"}
+			"corners": corners,
+			"colors": colors
 		},
 		{
 			"id": "ua_e_tazkira_3x4cm_photo",
@@ -64,23 +114,14 @@
 				"crownTop": 1,
                 "units":"px"
 			},
+			"extraOptions": eOpts,
 			"price":{
 				"value": 10,
 				"currency": "грн"
 			},
             "extension":"bmp",
-			"corners": [
-				{
-					"0": "Без уголка"
-				},
-				{
-					"2": "Справа вверу"
-				},
-				{
-					"3": "Справа внизу"
-				}
-			],
-			"colors": {"gray":"Ч/Б", "color":"Цветное"}
+			"corners": corners,
+			"colors": colors
 		}
     ];
 	let pp = new PhotoPassport({
@@ -117,7 +158,7 @@
 			pp.setImage('http://localhost:8080/src/assets/Robert-Downey-Jr-c.jpg')
         },
 		onOptionChanged: (options) => {
-			console.log(options);
+			//console.log(options);
 			console.log(JSON.stringify(options));
         }
     });

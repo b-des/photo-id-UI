@@ -23,12 +23,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/bundle.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/dist/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/photo-standards.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/photo-standards.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/preview/options.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/options.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +92,7 @@
       <recent name="D:\Node\photo-passport-UI\src\model" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.SERVE">
+  <component name="RunManager" selected="npm.BUILD">
     <configuration name="BUILD" type="js.build_tools.npm">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -181,7 +179,8 @@
       <workItem from="1601964810621" duration="1529000" />
       <workItem from="1601982070908" duration="2437000" />
       <workItem from="1602065366522" duration="10631000" />
-      <workItem from="1602156369363" duration="1181000" />
+      <workItem from="1602156369363" duration="5957000" />
+      <workItem from="1602227280125" duration="8494000" />
     </task>
     <servers />
   </component>
@@ -217,26 +216,26 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1601726127896" />
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1602157447791">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1602258818227">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1602157447791" />
-    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1602157447791">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1602258818227" />
+    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1602258818226">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1602157447791" />
-    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1602157447790">
+    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1602258818226" />
+    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1602258818225">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1602157447790" />
-    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1602157447791">
+    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1602258818225" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1602258818226">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1602157447791" />
-    <state x="651" y="162" width="618" height="783" key="find.popup" timestamp="1601538289447">
+    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1602258818226" />
+    <state x="651" y="162" width="618" height="783" key="find.popup" timestamp="1602230395306">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="651" y="162" width="618" height="783" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1601538289447" />
+    <state x="651" y="162" width="618" height="783" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1602230395306" />
     <state x="852" y="451" width="260" height="219" key="publish.login" timestamp="1601800954705">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
