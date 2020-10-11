@@ -6675,7 +6675,8 @@ var editor_Editor = /*#__PURE__*/function (_Component) {
       crownPosition: {},
       chinPosition: {},
       landmarkVisibility: true,
-      image: null
+      image: null,
+      isImageLoaded: false
     };
     return _this;
   }
@@ -6767,6 +6768,10 @@ var editor_Editor = /*#__PURE__*/function (_Component) {
         this.renderImage();
         this.setLandMarks(new Point(140, 20), new Point(141, this._viewPortHeight / 2.5));
       }
+
+      this.setState({
+        isImageLoaded: true
+      });
     }
   }, {
     key: "calculateViewPort",
@@ -6995,7 +7000,7 @@ var editor_Editor = /*#__PURE__*/function (_Component) {
     key: "render",
     value: function render(props, state, context) {
       return Object(preact_module["h"])(dist_react_loadingmask_default.a, {
-        loading: this.state.image == null,
+        loading: !this.state.isImageLoaded,
         text: 'loading...',
         style: {
           width: '100%',
@@ -7018,7 +7023,7 @@ var editor_Editor = /*#__PURE__*/function (_Component) {
       }), Object(preact_module["h"])("svg", {
         className: "box",
         style: {
-          visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden'
+          visibility: this.state.landmarkVisibility && this.state.isImageLoaded ? 'visible' : 'hidden'
         },
         "pointer-events": "none"
       }, Object(preact_module["h"])("image", {
@@ -7109,13 +7114,13 @@ var editor_Editor = /*#__PURE__*/function (_Component) {
         className: "landmark",
         id: "crownMark",
         style: {
-          visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden'
+          visibility: this.state.landmarkVisibility && this.state.isImageLoaded ? 'visible' : 'hidden'
         }
       }), Object(preact_module["h"])("div", {
         className: "landmark",
         id: "chinMark",
         style: {
-          visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden'
+          visibility: this.state.landmarkVisibility && this.state.isImageLoaded ? 'visible' : 'hidden'
         }
       }))));
     }
@@ -7314,9 +7319,9 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
 
       this.initPreviewCanvas(dimensions); // set canvas size for custom preview
 
-      this.setPreviewCanvasSize(dimensions); // generate list of corner options
+      this.setPreviewCanvasSize(dimensions); // generate lists of options
 
-      this.generateCornersOptionsList(); // send request to generate photo
+      this.generateOptionsList(); // send request to generate photo
 
       this.loadGeneratedPreview({});
     }
@@ -7373,16 +7378,26 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       this._canvas.setWidth(dimensions.pictureWidth);
     }
   }, {
-    key: "generateCornersOptionsList",
-    value: function generateCornersOptionsList() {
+    key: "generateOptionsList",
+    value: function generateOptionsList() {
       var _this3 = this;
 
-      var corner = this.props.standard.corners.length ? this.props.standard.corners[0] : initialState.corner;
-      var hue = this.props.standard.colors.length ? this.props.standard.colors[0] : initialState.color;
+      var standard = this.props.standard;
+      var corner = standard.corners.length ? standard.corners[0] : initialState.corner;
+      var hue = standard.colors.length ? standard.colors[0] : initialState.color;
+      var extraOptions = [];
+
+      if (standard.extraOptions) {
+        extraOptions = standard.extraOptions.map(function (option) {
+          return [parseInt(option.id), parseInt(option.options[0].id)];
+        });
+      }
+
       this.setState({
         corner: corner,
         hue: hue,
-        isOptionsChanged: true
+        isOptionsChanged: true,
+        extraOptions: extraOptions
       });
       this.corners = this.props.standard.corners && this.props.standard.corners.length ? this.props.standard.corners.map(function (corner) {
         return Object(preact_module["h"])("option", {
@@ -7564,47 +7579,47 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
             chin: chin
           }
         }).then(function (response) {
-          if (!response.data.result) {
-            if (response.data.error) {
-              switch (response.data.error) {
-                case Constants.NO_FACE:
-                  _this5.alert.error('На фото не обнаружено лица');
-
-                  _this5.props.reset();
-
-                  break;
-
-                case Constants.MORE_ONE_FACES:
-                  _this5.alert.error('На фото обнаружено более одного лица');
-
-                  _this5.props.reset();
-
-                  break;
-              }
-            }
-          } else if (response.data.result.base64) {
-            _this5.setState({
-              preview: 'data:image/png;base64, ' + response.data.result.base64,
-              uid: response.data.result.uid,
-              noBgImageUrl: response.data.result.url
-            });
-
-            _this5._img.src = response.data.result.url;
-
-            _this5._img.onload = function () {};
-
-            _this5.props.onRemoveBackground(response.data.result.url);
-          } else {
-            _this5.networkError();
-          }
+          _this5.handleNetworkResponse(response);
         })["catch"](function (error) {
-          _this5.networkError();
+          _this5.handleNetworkError();
         });
       }
     }
   }, {
-    key: "networkError",
-    value: function networkError() {
+    key: "handleNetworkResponse",
+    value: function handleNetworkResponse(response) {
+      if (!response.data.result) {
+        if (response.data.error) {
+          switch (response.data.error) {
+            case Constants.NO_FACE:
+              this.alert.error('На фото не обнаружено лица');
+              this.props.reset();
+              break;
+
+            case Constants.MORE_ONE_FACES:
+              this.alert.error('На фото обнаружено более одного лица');
+              this.props.reset();
+              break;
+          }
+        }
+      } else if (response.data.result.base64) {
+        this.setState({
+          preview: 'data:image/png;base64, ' + response.data.result.base64,
+          uid: response.data.result.uid,
+          noBgImageUrl: response.data.result.url
+        });
+        this._img.src = response.data.result.url;
+
+        this._img.onload = function () {};
+
+        this.props.onRemoveBackground(response.data.result.url);
+      } else {
+        this.networkError();
+      }
+    }
+  }, {
+    key: "handleNetworkError",
+    value: function handleNetworkError() {
       this.setState({
         preview: '',
         networkError: true
@@ -7767,6 +7782,11 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         isOptionsChanged: true
       });
     }
+    /**
+     * Create object with selected options and params
+     * @returns {}
+     */
+
   }, {
     key: "createResultForOrder",
     value: function createResultForOrder() {
@@ -7791,10 +7811,17 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         extraOptions: this.state.extraOptions
       };
     }
+    /**
+     * Send options to callback whe option changed
+     * @param extraOption
+     */
+
   }, {
     key: "sendOptionsToCallback",
     value: function sendOptionsToCallback(extraOption) {
-      var parameters = this.createResultForOrder();
+      // get selected options
+      var parameters = this.createResultForOrder(); // if changed additional option
+      // update state
 
       if (extraOption) {
         var index = parameters.extraOptions.findIndex(function (obj) {
@@ -7810,13 +7837,20 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         this.setState({
           extraOptions: parameters.extraOptions
         });
-      }
+      } // fire callback
+
+
+      this.props.onOptionChanged.call(this, parameters); // set flag to false
+      // after sending options to callback
 
       this.setState({
         isOptionsChanged: false
       });
-      this.props.onOptionChanged.call(this, parameters);
     }
+    /**
+     * Call method when click order button
+     */
+
   }, {
     key: "makeOrder",
     value: function makeOrder() {
@@ -7954,11 +7988,11 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       }, //(this.state.preview !== null || this.props.isEditorOpen) &&
       Object(preact_module["h"])("div", {
         className: "form-row justify-content-end align-items-center"
-      }, this.colors && Object(preact_module["h"])("div", {
+      }, this.colors && this.colors.length > 1 && Object(preact_module["h"])("div", {
         className: "col-md-auto col-sm-1"
       }, Object(preact_module["h"])("div", {
         className: "input-group mb-2"
-      }, this.colors)), this.corners && Object(preact_module["h"])("div", {
+      }, this.colors)), this.corners && this.corners.length > 1 && Object(preact_module["h"])("div", {
         className: "col-md-auto col-sm-1"
       }, Object(preact_module["h"])("div", {
         className: "input-group mb-2"

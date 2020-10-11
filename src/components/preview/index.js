@@ -56,8 +56,8 @@ class Preview extends Component {
 		// set canvas size for custom preview
 		this.setPreviewCanvasSize(dimensions);
 
-		// generate list of corner options
-		this.generateCornersOptionsList();
+		// generate lists of options
+		this.generateOptionsList();
 
 		// send request to generate photo
 		this.loadGeneratedPreview({});
@@ -116,13 +116,21 @@ class Preview extends Component {
 		this._canvas.setWidth(dimensions.pictureWidth);
 	}
 
-	generateCornersOptionsList() {
-		let corner = this.props.standard.corners.length ? this.props.standard.corners[0] : initialState.corner;
-		let hue = this.props.standard.colors.length ? this.props.standard.colors[0] : initialState.color;
+	generateOptionsList() {
+		let standard = this.props.standard;
+		let corner = standard.corners.length ? standard.corners[0] : initialState.corner;
+		let hue = standard.colors.length ? standard.colors[0] : initialState.color;
+		let extraOptions = [];
+		if(standard.extraOptions){
+			extraOptions = standard.extraOptions.map(option => {
+				return [parseInt(option.id), parseInt(option.options[0].id)]
+			});
+		}
 		this.setState({
 			corner: corner,
 			hue: hue,
-			isOptionsChanged: true
+			isOptionsChanged: true,
+			extraOptions: extraOptions
 		})
 		this.corners = this.props.standard.corners && this.props.standard.corners.length ?
 			this.props.standard.corners.map(corner => {
@@ -277,41 +285,43 @@ class Preview extends Component {
 					chin: chin
 				}
 			}).then(response => {
-				if (!response.data.result) {
-					if(response.data.error){
-						switch (response.data.error){
-							case Constants.NO_FACE:
-								this.alert.error('На фото не обнаружено лица');
-								this.props.reset();
-								break;
-							case Constants.MORE_ONE_FACES:
-								this.alert.error('На фото обнаружено более одного лица');
-								this.props.reset();
-								break;
-						}
-					}
-
-				} else if (response.data.result.base64) {
-					this.setState({
-						preview: 'data:image/png;base64, ' + response.data.result.base64,
-						uid: response.data.result.uid,
-						noBgImageUrl: response.data.result.url
-					});
-					this._img.src = response.data.result.url;
-					this._img.onload = () => {
-					};
-					this.props.onRemoveBackground(response.data.result.url);
-				} else {
-					this.networkError();
-				}
-
+				this.handleNetworkResponse(response)
 			}).catch(error => {
-				this.networkError();
+				this.handleNetworkError();
 			});
 		}
 	}
 
-	networkError(){
+	handleNetworkResponse(response){
+		if (!response.data.result) {
+			if(response.data.error){
+				switch (response.data.error){
+					case Constants.NO_FACE:
+						this.alert.error('На фото не обнаружено лица');
+						this.props.reset();
+						break;
+					case Constants.MORE_ONE_FACES:
+						this.alert.error('На фото обнаружено более одного лица');
+						this.props.reset();
+						break;
+				}
+			}
+
+		} else if (response.data.result.base64) {
+			this.setState({
+				preview: 'data:image/png;base64, ' + response.data.result.base64,
+				uid: response.data.result.uid,
+				noBgImageUrl: response.data.result.url
+			});
+			this._img.src = response.data.result.url;
+			this._img.onload = () => {};
+			this.props.onRemoveBackground(response.data.result.url);
+		} else {
+			this.networkError();
+		}
+	}
+
+	handleNetworkError(){
 		this.setState({
 			preview: '',
 			networkError: true
@@ -585,7 +595,7 @@ class Preview extends Component {
 					<div className="container">
 						<div className="row">
 							<div className="col text-center">
-								<p className="title">Выберите вариант который Вам наиболее подходит: </p>
+								<p className="title">Выберите вариант который Вам больше нравится: </p>
 							</div>
 						</div>
 					</div>
@@ -662,14 +672,14 @@ class Preview extends Component {
 							<div className="col text-right">
 								{//(this.state.preview !== null || this.props.isEditorOpen) &&
 								<div className="form-row justify-content-end align-items-center">
-									{this.colors &&
+									{this.colors && this.colors.length > 1 &&
 										<div className="col-md-auto col-sm-1">
 											<div className="input-group mb-2">
 												{this.colors}
 											</div>
 										</div>
 									}
-									{this.corners &&
+									{this.corners && this.corners.length > 1 &&
 										<div className="col-md-auto col-sm-1">
 											<div className="input-group mb-2">
 												<select onChange={this.handleCornerChange.bind(this)}

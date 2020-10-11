@@ -19,7 +19,8 @@ class Editor extends Component {
 			crownPosition: {},
 			chinPosition: {},
 			landmarkVisibility: true,
-			image: null
+			image: null,
+			isImageLoaded: false
 		};
 	}
 
@@ -116,6 +117,9 @@ class Editor extends Component {
 				new Point(141, this._viewPortHeight / 2.5)
 			);
 		}
+		this.setState({
+			isImageLoaded: true
+		})
 	}
 
 	calculateViewPort() {
@@ -330,7 +334,7 @@ class Editor extends Component {
 	}
 
 	render(props, state, context) {
-		return <LoadingMask loading={this.state.image == null} text={'loading...'} style={{ width: '100%', height: '100%' }}>
+		return <LoadingMask loading={!this.state.isImageLoaded} text={'loading...'} style={{ width: '100%', height: '100%' }}>
 			<div style={{ margin: '0 auto', padding: '10px' }}>
 				<div id="viewport">
 					<img
@@ -340,7 +344,7 @@ class Editor extends Component {
 						src={this.state.image}
 						onLoad={this.onLoadImage.bind(this)}
 						onError={this.imageLoadFailed.bind(this)}/>
-					<svg className="box" style={{ visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden' }}
+					<svg className="box" style={{ visibility: this.state.landmarkVisibility && this.state.isImageLoaded ? 'visible' : 'hidden' }}
 						 pointer-events="none">
 						<image class="inputPhoto" xlink:href={this.state.image} x="0" y="0" height="0" width="0"/>
 						<defs>
@@ -360,9 +364,9 @@ class Editor extends Component {
 
 					</svg>
 					<div className="landmark" id="crownMark"
-						 style={{ visibility: this.state.landmarkVisibility && this.state.image? 'visible' : 'hidden' }}/>
+						 style={{ visibility: this.state.landmarkVisibility && this.state.isImageLoaded ? 'visible' : 'hidden' }}/>
 					<div className="landmark" id="chinMark"
-						 style={{ visibility: this.state.landmarkVisibility && this.state.image ? 'visible' : 'hidden' }}/>
+						 style={{ visibility: this.state.landmarkVisibility && this.state.isImageLoaded ? 'visible' : 'hidden' }}/>
 
 				</div>
 			</div>
