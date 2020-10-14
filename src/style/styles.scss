@@ -1,21 +1,21 @@
 @import "global";
 @import "mixins";
 
-body{
+body {
   background: #f3f3f4;
 
-  .welcome-container{
-    .list-group{
-      p{
+  .welcome-container {
+    .list-group {
+      p {
         font-size: 13px;
       }
     }
   }
 
-  .app-card{
+  .app-card {
     background: #f3f3f4;
     //border-radius: 10px;
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     padding: 0;
     margin: 10px;
   }
@@ -26,6 +26,7 @@ body{
     z-index: 0;
 
   }
+
   #viewport {
     position: relative;
     max-height: 80vh;
@@ -41,6 +42,7 @@ body{
     background: white;
     touch-action: none;
   }
+
   @media (max-aspect-ratio: 5/4) {
     #viewport {
       height: 50vh;
@@ -52,23 +54,27 @@ body{
 
     }
   }
+
   .box {
     position: absolute;
     width: 100%;
     height: 100%;
     border-radius: 5px;
   }
+
   .annotation {
     stroke: #aa15a1;
     stroke-width: 1.5;
     stroke-dasharray: 5, 2;
     stroke-opacity: 0.7;
   }
+
   .dimension-text {
     font-family: sans-serif;
     font-size: 1.2em;
     fill: lightgray;
   }
+
   .dimension-line {
     stroke-width: 1;
     stroke: lightgray;
@@ -87,57 +93,130 @@ body{
     background-color: #69ffce;
   }
 
-  .preview-component{
-    .debug-canvas-container{
-      &>*{
+  .preview-component {
+    .debug-canvas-container {
+      & > * {
         margin: 0 auto;
       }
 
     }
-    p.title{
+
+    p.title {
       font-size: 16px;
       color: #245b71;
     }
-    .previews{
+
+    .previews {
       text-align: center;
-      .preview{
+
+      .preview {
         display: inline-block;
         border: 4px solid #a4a2a2d4;
-        //border-radius: .45rem;
+        position: relative;
         cursor: pointer;
-        canvas, svg{
-          //pointer-events:none;
-        }
-        &.active{
+
+
+        &.active {
           border: 4px solid #41b0e6;
+        }
+        $corner-size: 125px;
+
+        &[class*="corner-"]:after{
+          content: "";
+          width: 0;
+          height: 0;
+          z-index: 1;
+          position: absolute;
+        }
+        &.corner-BR::after{
+          border-bottom: $corner-size solid white;
+          border-left: $corner-size solid transparent;
+          bottom: 0;
+          right: 0;
+        }
+
+        &.corner-BL::after{
+          border-bottom: $corner-size solid white;
+          border-right: $corner-size solid transparent;
+          bottom: 0;
+          left: 0;
+        }
+
+        &.corner-TR::after{
+          border-top: $corner-size solid white;
+          border-left: $corner-size solid transparent;
+          top: 0;
+          right: 0;
+        }
+
+        &.corner-TL::after{
+          border-top: $corner-size solid white;
+          border-right: $corner-size solid transparent;
+          top: 0;
+          left: 0;
+        }
+
+        &.preloader-scan{
+
+          &>.diode {
+            //animation: beam .01s infinite;
+            &>.laser {
+              width: 100%;
+              margin-left: 0;
+              background-color: tomato;
+              height: 1px;
+              position: absolute;
+              top: 0;
+              z-index: 2;
+              box-shadow: 0 0 4px red;
+              animation: scanning 4s infinite;
+            }
+          }
+
+          @keyframes beam {
+            50% {
+              opacity: 0;
+            }
+          }
+
+          @keyframes scanning {
+            50% {
+              transform: translateY(333px);
+            }
+          }
         }
 
       }
 
     }
 
-    .text-info{
+    .text-info {
       font-size: 14px;
     }
 
-    label{
+    label {
       margin: 0;
       font-size: 12px;
     }
 
-    input[type='number']{
-      @include gte-tablet{
+    input[type='number'] {
+      @include gte-tablet {
         max-width: 70px;
       }
     }
   }
+
+  .grayscale {
+    -webkit-filter: grayscale(1);
+    filter: grayscale(1);
+  }
 }
 
-p.label{
+p.label {
   font-size: 12px;
   color: #535353;
 }
 
-.lower-canvas{
+.lower-canvas {
   border: none !important;
 }

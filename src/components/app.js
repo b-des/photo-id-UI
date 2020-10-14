@@ -62,12 +62,10 @@ export default class App extends Component {
 		});
 		if (selectedStandard.length > 0) {
 			selectedStandard = selectedStandard[0];
-			if(!selectedStandard.colors)
-				selectedStandard['colors'] = {"gray":"Ч/Б", "color":"Цветное"}
 
 			this.setState({
 				selectedStandard: selectedStandard,
-				price: `${selectedStandard.price.value} ${selectedStandard.price.currency}`
+				price: selectedStandard.price.text
 			});
 		}
 
@@ -118,6 +116,9 @@ export default class App extends Component {
 						height: tmpImage.naturalHeight,
 					}
 				});
+				let uploadPhotoButton = document.getElementById("uploadPhoto");
+				uploadPhotoButton.removeAttribute("disabled");
+				uploadPhotoButton.innerHTML = "";
 				useAlert().error("Извините, Ваша фотография не соответствует требованиям")
 			}else{
 				this.setState({
@@ -159,6 +160,7 @@ export default class App extends Component {
 										 previewSize={this.props.options.preview.size}
 										 serviceHost={this.props.options.serviceHost}
 										 debug={this.props.options.debug}
+										 removeBackground={this.props.options.removeBackground}
 										 onOrderClick={this.props.options.onOrderClick}
 										 onOptionChanged={this.props.options.onOptionChanged}
 										 onRemoveBackground={url => this.onRemoveBackground.call(this, url)}
@@ -210,7 +212,7 @@ export default class App extends Component {
 							}
 							{this.state.selectedStandard &&
 							<div className="text-center mt-3">
-								<button className="btn btn-outline-success"
+								<button className="btn btn-outline-success" id={"uploadPhoto"}
 										onClick={this.props.options.onRequestPhotoClick.bind(this)}>
 									Загрузить фото
 								</button>

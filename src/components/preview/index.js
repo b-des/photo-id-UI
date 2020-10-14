@@ -7,10 +7,11 @@ import React from 'preact/compat';
 import fabric from 'fabric/dist/fabric.min';
 import { getBoundingRectangleAfterRotate, transformCoordinateAfterRotate } from '../../model/point';
 import Options from './options';
+
 const initialState = {
 	preview: null,
 	quantity: 1,
-	corner: {value: 'none'},
+	corner: { value: 'none' },
 	loadingAnimation: null,
 	dimensions: {
 		pictureWidth: 0,
@@ -19,19 +20,21 @@ const initialState = {
 	originalImageUrl: null,
 	noBgImageUrl: null,
 	uid: null,
-	hue: {value: 'color'},
+	hue: { value: 'color' },
 	extraOptions: [],
 	networkError: false,
 	selectedType: Constants.GENERATED,
 	inProcess: false,
 	isOptionsChanged: false
-}
+};
+
 class Preview extends Component {
 	constructor() {
 		super();
 		this.image = new Image();
 		this.alert = useAlert();
-		this.dimensionMultiplier = 4;
+		this.dimensionMultiplier = 1;
+		this.previewCanvasWidth = 250;
 		this.corners = null;
 		this.colors = null;
 		this.state = initialState;
@@ -40,10 +43,7 @@ class Preview extends Component {
 
 
 	componentDidMount() {
-		// if dimension of final photo is present in pixels
-		if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
-			this.dimensionMultiplier = 0.3;
-		}
+		this.dimensionMultiplier = this.previewCanvasWidth / this.props.standard.dimensions.pictureWidth;
 
 		let dimensions = {
 			pictureWidth: parseFloat(this.props.standard.dimensions.pictureWidth) * this.dimensionMultiplier,
@@ -80,7 +80,7 @@ class Preview extends Component {
 			this.initEventListeners();
 
 		// call callback on option changed
-		if(this.state.isOptionsChanged)
+		if (this.state.isOptionsChanged)
 			this.sendOptionsToCallback();
 	}
 
@@ -121,9 +121,9 @@ class Preview extends Component {
 		let corner = standard.corners.length ? standard.corners[0] : initialState.corner;
 		let hue = standard.colors.length ? standard.colors[0] : initialState.color;
 		let extraOptions = [];
-		if(standard.extraOptions){
+		if (standard.extraOptions) {
 			extraOptions = standard.extraOptions.map(option => {
-				return [parseInt(option.id), parseInt(option.options[0].id)]
+				return [parseInt(option.id), parseInt(option.options[0].id)];
 			});
 		}
 		this.setState({
@@ -131,7 +131,7 @@ class Preview extends Component {
 			hue: hue,
 			isOptionsChanged: true,
 			extraOptions: extraOptions
-		})
+		});
 		this.corners = this.props.standard.corners && this.props.standard.corners.length ?
 			this.props.standard.corners.map(corner => {
 				return <option value={corner.id}>{corner.name}</option>;
@@ -145,7 +145,7 @@ class Preview extends Component {
 						   onClick={this.handleColorChange.bind(this)} id={`color-${color.id}`}
 						   value={color.id}/>
 					<label className="form-check-label" htmlFor={`color-${color.id}`}>{color.name}</label>
-				</div>
+				</div>;
 			}) : null;
 	}
 
@@ -278,6 +278,7 @@ class Preview extends Component {
 				url: this.props.imageUrl,
 				previewSize: this.props.previewSize,
 				debug: this.props.debug,
+				removeBackground: this.props.removeBackground,
 				dimensions: {
 					width: this.props.standard.dimensions.pictureWidth * c,
 					height: this.props.standard.dimensions.pictureHeight * c,
@@ -285,17 +286,17 @@ class Preview extends Component {
 					chin: chin
 				}
 			}).then(response => {
-				this.handleNetworkResponse(response)
+				this.handleNetworkResponse(response);
 			}).catch(error => {
 				this.handleNetworkError();
 			});
 		}
 	}
 
-	handleNetworkResponse(response){
+	handleNetworkResponse(response) {
 		if (!response.data.result) {
-			if(response.data.error){
-				switch (response.data.error){
+			if (response.data.error) {
+				switch (response.data.error) {
 					case Constants.NO_FACE:
 						this.alert.error('На фото не обнаружено лица');
 						this.props.reset();
@@ -307,21 +308,24 @@ class Preview extends Component {
 				}
 			}
 
-		} else if (response.data.result.base64) {
+		}
+		else if (response.data.result.base64) {
 			this.setState({
 				preview: 'data:image/png;base64, ' + response.data.result.base64,
 				uid: response.data.result.uid,
 				noBgImageUrl: response.data.result.url
 			});
-			this._img.src = response.data.result.url;
-			this._img.onload = () => {};
-			this.props.onRemoveBackground(response.data.result.url);
-		} else {
+			this._img.src = response.data.result.watermark_url;
+			this._img.onload = () => {
+			};
+			this.props.onRemoveBackground(response.data.result.watermark_url);
+		}
+		else {
 			this.networkError();
 		}
 	}
 
-	handleNetworkError(){
+	handleNetworkError() {
 		this.setState({
 			preview: '',
 			networkError: true
@@ -354,12 +358,13 @@ class Preview extends Component {
 	}
 
 	saveGeneratedImage() {
-		let scale = this.dimensionMultiplier * 2;
+		let scale = 1;
+		let dimensions = this.props.standard.dimensions;
 
 		// if dimension of final photo is present in pixels
 		// save image without scaling
-		if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
-			scale = 1;
+		if (!dimensions.units || dimensions.units === 'mm') {
+			scale = this._img.naturalWidth / 2 / dimensions.pictureWidth;
 		}
 
 		let payload = {
@@ -370,10 +375,10 @@ class Preview extends Component {
 			corner: this.state.corner.value,
 			scale: 2,
 			dimensions: {
-				width: this.props.standard.dimensions.pictureWidth * scale,
-				height: this.props.standard.dimensions.pictureHeight * scale,
-				crown: this.props.standard.dimensions.crownTop * scale,
-				chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * scale
+				width: dimensions.pictureWidth * scale,
+				height: dimensions.pictureHeight * scale,
+				crown: dimensions.crownTop * scale,
+				chin: (dimensions.faceHeight + dimensions.crownTop) * scale
 			}
 		};
 
@@ -384,9 +389,10 @@ class Preview extends Component {
 	}
 
 	createLoadingAnimation() {
-		let animatedCanvas = new this.fabric.Canvas();
-		animatedCanvas.setWidth(this.state.dimensions.pictureWidth);
-		animatedCanvas.setWidth(this.state.dimensions.pictureHeight);
+		//let animatedCanvas = new this.fabric.Canvas();
+		//this.state.dimensions.pictureWidth * this.dimensionMultiplier
+		//animatedCanvas.setWidth(250);
+		//animatedCanvas.setWidth(333);
 
 		let image = new this.fabric.Image(this._img, {
 			width: this._img.naturalWidth,
@@ -395,7 +401,8 @@ class Preview extends Component {
 			top: 0
 		});
 
-		image.scaleToHeight(animatedCanvas.getHeight(), true);
+
+		/*image.scaleToHeight(animatedCanvas.getHeight(), true);
 		image.scaleToWidth(animatedCanvas.getWidth(), true);
 
 		if (image.height < image.width)
@@ -429,13 +436,13 @@ class Preview extends Component {
 			}
 
 			this.setState({
-				loadingAnimation: animatedCanvas.toDataURL()
+				//loadingAnimation: animatedCanvas.toDataURL()
 			});
 
-		}, 50);
+		}, 50);*/
 
 		this.setState({
-			loadingAnimation: animatedCanvas.toDataURL()
+			loadingAnimation: image.toDataURL()
 		});
 
 	}
@@ -477,7 +484,7 @@ class Preview extends Component {
 		let corner = this.props.standard.corners
 			.filter(corner => corner.id === event.target.value);
 		this.setState({
-			corner: corner.length ? corner[0] : {value: 'none'},
+			corner: corner.length ? corner[0] : { value: 'none' },
 			isOptionsChanged: true
 		});
 	}
@@ -486,7 +493,7 @@ class Preview extends Component {
 		let color = this.props.standard.colors
 			.filter(color => color.id === event.target.value);
 		this.setState({
-			hue: color.length ? color[0] : {value: 'color'},
+			hue: color.length ? color[0] : { value: 'color' },
 			isOptionsChanged: true
 		});
 	}
@@ -499,10 +506,10 @@ class Preview extends Component {
 		let corner = this.props.standard.corners.filter(corner => corner.value === this.state.corner.value);
 		let hue = this.props.standard.colors.filter(color => color.value === this.state.hue.value);
 
-		if(corner.length)
-			corner = corner[0]
-		if(hue.length)
-			hue = hue[0]
+		if (corner.length)
+			corner = corner[0];
+		if (hue.length)
+			hue = hue[0];
 		return {
 			quantity: this.state.quantity,
 			type: this.state.selectedType,
@@ -525,18 +532,19 @@ class Preview extends Component {
 
 		// if changed additional option
 		// update state
-		if(extraOption){
+		if (extraOption) {
 
 			let index = parameters.extraOptions.findIndex(obj => obj[0] === extraOption[0]);
-			if(index < 0){
+			if (index < 0) {
 				parameters.extraOptions.push(extraOption);
-			}else{
-				parameters.extraOptions[index] = extraOption
+			}
+			else {
+				parameters.extraOptions[index] = extraOption;
 			}
 
 			this.setState({
 				extraOptions: parameters.extraOptions
-			})
+			});
 		}
 
 		// fire callback
@@ -570,6 +578,9 @@ class Preview extends Component {
 			let parameters = this.createResultForOrder();
 			this.props.onOrderClick.call(this, parameters);
 			this.alert.success('Заказ принят в обработку');
+			this.setState({
+				preview: null
+			});
 		}).catch(error => {
 			this.alert.error('Извините, возникла сетевая ошибка');
 		}).finally(() => {
@@ -582,7 +593,7 @@ class Preview extends Component {
 
 	render(props, state, context) {
 		return (
-			<LoadingMask loading={this.state.preview == null} text={'loading...'} style={{ width: '100%' }}>
+			<LoadingMask loading={this.state.preview === null} text={'loading...'} style={{ width: '100%' }}>
 				{this.props.debug &&
 				<div className="text-center debug-canvas-container">
 					<canvas id="developPreview" style={{ background: 'none', margin: '0 auto' }}
@@ -605,9 +616,11 @@ class Preview extends Component {
 						<div className="row">
 							<div className="col" style={{ display: this.props.isEditorOpen ? 'block' : 'none' }}>
 								<div
-									className={`preview ${this.state.selectedType === Constants.CUSTOM ? 'active' : ''}`}
+									className={`corner-${this.state.corner.value} preview 
+									${this.state.selectedType === Constants.CUSTOM ? 'active' : ''}`}
 									onClick={this.selectType.bind(this, Constants.CUSTOM)}>
 									<canvas id="canvasPreview"
+											className={this.state.hue.value === 'gray' ? 'grayscale' : null}
 											style={{
 												width: `${this.state.dimensions.pictureWidth}px`,
 												height: `${this.state.dimensions.pictureHeight}px`, background: 'none'
@@ -619,11 +632,16 @@ class Preview extends Component {
 
 							<div className="col">
 								<div
-									className={`preview ${this.state.selectedType === Constants.GENERATED ? 'active' : ''}`}
+									className={`corner-${this.state.corner.value} preview 
+									${this.state.preview === null ? 'preloader-scan' : ''}
+									${this.state.selectedType === Constants.GENERATED ? 'active' : ''}`}
 									onClick={this.selectType.bind(this, Constants.GENERATED)}>
-
+									<div className="diode">
+										<div className="laser"></div>
+									</div>
 									<svg width={`${this.state.dimensions.pictureWidth}px`}
-										 height={`${this.state.dimensions.pictureHeight}px`} version="1.1">
+										 height={`${this.state.dimensions.pictureHeight}px`} version="1.1"
+										 className={this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : null}>
 
 										<image xlinkHref={this.state.preview || this.state.loadingAnimation}
 											   x="0" y="0" height="100%" width="100%"/>
@@ -655,31 +673,31 @@ class Preview extends Component {
 					</div>
 					}
 					{this.props.standard.extraOptions &&
-						<div className="container mt-3">
-							<div className="row">
-								<div className="col">
-										<Options
-											onOptionChanged={option => this.sendOptionsToCallback.call(this, option)}
-											options={this.props.standard.extraOptions}/>
-								</div>
-
+					<div className="container mt-3">
+						<div className="row">
+							<div className="col">
+								<Options
+									onOptionChanged={option => this.sendOptionsToCallback.call(this, option)}
+									options={this.props.standard.extraOptions}/>
 							</div>
+
 						</div>
+					</div>
 					}
 
 					<div className="container mt-3">
 						<div className="row">
 							<div className="col text-right">
 								{//(this.state.preview !== null || this.props.isEditorOpen) &&
-								<div className="form-row justify-content-end align-items-center">
-									{this.colors && this.colors.length > 1 &&
+									<div className="form-row justify-content-end align-items-center">
+										{this.colors && this.colors.length > 1 &&
 										<div className="col-md-auto col-sm-1">
 											<div className="input-group mb-2">
 												{this.colors}
 											</div>
 										</div>
-									}
-									{this.corners && this.corners.length > 1 &&
+										}
+										{this.corners && this.corners.length > 1 &&
 										<div className="col-md-auto col-sm-1">
 											<div className="input-group mb-2">
 												<select onChange={this.handleCornerChange.bind(this)}
@@ -688,35 +706,35 @@ class Preview extends Component {
 												</select>
 											</div>
 										</div>
-									}
-									<div className="col-md-auto col-sm-1">
-										<div className="input-group mb-2">
-											<div className="input-group-prepend">
-												<div className="input-group-text">
-													<label>Количество:</label>
+										}
+										<div className="col-md-auto col-sm-1">
+											<div className="input-group mb-2">
+												<div className="input-group-prepend">
+													<div className="input-group-text">
+														<label>Количество:</label>
+													</div>
 												</div>
+												<input type="number" className="form-control" min="1" max="99"
+													   value={this.state.quantity}
+													   onChange={this.handleQuantityChange.bind(this)}/>
 											</div>
-											<input type="number" className="form-control" min="1" max="99"
-												   value={this.state.quantity}
-												   onChange={this.handleQuantityChange.bind(this)}/>
 										</div>
-									</div>
-									<div className="col-md-auto col-sm-1">
+										<div className="col-md-auto col-sm-1">
 
-										<button className={'btn btn-outline-primary mb-2 w-100'}
-												disabled={this.state.inProcess} onClick={this.makeOrder.bind(this)}>
-											{this.state.inProcess ?
-												<div>
+											<button className={'btn btn-outline-primary mb-2 w-100'}
+													disabled={this.state.inProcess} onClick={this.makeOrder.bind(this)}>
+												{this.state.inProcess ?
+													<div>
 													<span className="spinner-border spinner-border-sm" role="status"
 														  aria-hidden="true"/>
-												</div>
-												:
-												`Заказать (${this.props.price})`
-											}
+													</div>
+													:
+													`Заказать (${this.props.price})`
+												}
 
-										</button>
+											</button>
+										</div>
 									</div>
-								</div>
 								}
 							</div>
 						</div>

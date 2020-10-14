@@ -334,7 +334,8 @@ class Editor extends Component {
 	}
 
 	render(props, state, context) {
-		return <LoadingMask loading={!this.state.isImageLoaded} text={'loading...'} style={{ width: '100%', height: '100%' }}>
+		return <LoadingMask loading={!this.state.isImageLoaded} text={'loading...'}
+							style={{ width: '100%', height: '100%' }} className={"d-flex justify-content-center align-items-center"}>
 			<div style={{ margin: '0 auto', padding: '10px' }}>
 				<div id="viewport">
 					<img

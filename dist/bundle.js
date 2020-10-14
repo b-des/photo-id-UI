@@ -7005,7 +7005,8 @@ var editor_Editor = /*#__PURE__*/function (_Component) {
         style: {
           width: '100%',
           height: '100%'
-        }
+        },
+        className: "d-flex justify-content-center align-items-center"
       }, Object(preact_module["h"])("div", {
         style: {
           margin: '0 auto',
@@ -7297,7 +7298,8 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
     _this = _super.call(this);
     _this.image = new Image();
     _this.alert = react_alert_useAlert();
-    _this.dimensionMultiplier = 4;
+    _this.dimensionMultiplier = 1;
+    _this.previewCanvasWidth = 250;
     _this.corners = null;
     _this.colors = null;
     _this.state = initialState;
@@ -7307,11 +7309,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   preview_createClass(Preview, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      // if dimension of final photo is present in pixels
-      if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
-        this.dimensionMultiplier = 0.3;
-      }
-
+      this.dimensionMultiplier = this.previewCanvasWidth / this.props.standard.dimensions.pictureWidth;
       var dimensions = {
         pictureWidth: parseFloat(this.props.standard.dimensions.pictureWidth) * this.dimensionMultiplier,
         pictureHeight: parseFloat(this.props.standard.dimensions.pictureHeight) * this.dimensionMultiplier
@@ -7572,6 +7570,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
           url: this.props.imageUrl,
           previewSize: this.props.previewSize,
           debug: this.props.debug,
+          removeBackground: this.props.removeBackground,
           dimensions: {
             width: this.props.standard.dimensions.pictureWidth * c,
             height: this.props.standard.dimensions.pictureHeight * c,
@@ -7608,11 +7607,11 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
           uid: response.data.result.uid,
           noBgImageUrl: response.data.result.url
         });
-        this._img.src = response.data.result.url;
+        this._img.src = response.data.result.watermark_url;
 
         this._img.onload = function () {};
 
-        this.props.onRemoveBackground(response.data.result.url);
+        this.props.onRemoveBackground(response.data.result.watermark_url);
       } else {
         this.networkError();
       }
@@ -7647,11 +7646,12 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "saveGeneratedImage",
     value: function saveGeneratedImage() {
-      var scale = this.dimensionMultiplier * 2; // if dimension of final photo is present in pixels
+      var scale = 1;
+      var dimensions = this.props.standard.dimensions; // if dimension of final photo is present in pixels
       // save image without scaling
 
-      if (this.props.standard.dimensions.units && this.props.standard.dimensions.units === 'px') {
-        scale = 1;
+      if (!dimensions.units || dimensions.units === 'mm') {
+        scale = this._img.naturalWidth / 2 / dimensions.pictureWidth;
       }
 
       var payload = {
@@ -7662,10 +7662,10 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         corner: this.state.corner.value,
         scale: 2,
         dimensions: {
-          width: this.props.standard.dimensions.pictureWidth * scale,
-          height: this.props.standard.dimensions.pictureHeight * scale,
-          crown: this.props.standard.dimensions.crownTop * scale,
-          chin: (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * scale
+          width: dimensions.pictureWidth * scale,
+          height: dimensions.pictureHeight * scale,
+          crown: dimensions.crownTop * scale,
+          chin: (dimensions.faceHeight + dimensions.crownTop) * scale
         }
       };
       if (this.props.standard.extension) payload['ext'] = this.props.standard.extension;
@@ -7674,49 +7674,49 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "createLoadingAnimation",
     value: function createLoadingAnimation() {
-      var _this6 = this;
-
-      var animatedCanvas = new this.fabric.Canvas();
-      animatedCanvas.setWidth(this.state.dimensions.pictureWidth);
-      animatedCanvas.setWidth(this.state.dimensions.pictureHeight);
+      //let animatedCanvas = new this.fabric.Canvas();
+      //this.state.dimensions.pictureWidth * this.dimensionMultiplier
+      //animatedCanvas.setWidth(250);
+      //animatedCanvas.setWidth(333);
       var image = new this.fabric.Image(this._img, {
         width: this._img.naturalWidth,
         height: this._img.naturalHeight,
         left: 0,
         top: 0
       });
-      image.scaleToHeight(animatedCanvas.getHeight(), true);
+      /*image.scaleToHeight(animatedCanvas.getHeight(), true);
       image.scaleToWidth(animatedCanvas.getWidth(), true);
-      if (image.height < image.width) image.top = image.height / image.width * 2 * 10;
-      animatedCanvas.add(image);
-      var scannerLine = new this.fabric.Line([0, 0, animatedCanvas.getWidth(), 0], {
-        stroke: 'red'
-      });
+      	if (image.height < image.width)
+      	image.top = (image.height / image.width) * 2 * 10;
+      	animatedCanvas.add(image);
+      let scannerLine = new this.fabric.Line([0, 0, animatedCanvas.getWidth(), 0], { stroke: 'red' });
       animatedCanvas.add(scannerLine);
-      var down = true;
-      var step = 5;
-      var interval = setInterval(function () {
-        if (scannerLine.top >= 0 && !down) {
-          scannerLine.top -= step;
-        } else if (scannerLine.top < animatedCanvas.getHeight() && down) {
-          scannerLine.top += step;
-        } else if (scannerLine.top >= animatedCanvas.getHeight()) {
-          down = false;
-        } else if (scannerLine.top <= 0) {
-          down = true;
-        }
+      	let down = true;
+      let step = 5;
+      	let interval = setInterval(() => {
+      		if (scannerLine.top >= 0 && !down) {
+      		scannerLine.top -= step;
+      	}
+      	else if (scannerLine.top < animatedCanvas.getHeight() && down) {
+      		scannerLine.top += step;
+      	}
+      	else if (scannerLine.top >= animatedCanvas.getHeight()) {
+      		down = false;
+      	}
+      	else if (scannerLine.top <= 0) {
+      		down = true;
+      	}
+      		if (this.state.preview || this.state.networkError) {
+      		animatedCanvas.remove(scannerLine);
+      		clearInterval(interval);
+      	}
+      		this.setState({
+      		//loadingAnimation: animatedCanvas.toDataURL()
+      	});
+      	}, 50);*/
 
-        if (_this6.state.preview || _this6.state.networkError) {
-          animatedCanvas.remove(scannerLine);
-          clearInterval(interval);
-        }
-
-        _this6.setState({
-          loadingAnimation: animatedCanvas.toDataURL()
-        });
-      }, 50);
       this.setState({
-        loadingAnimation: animatedCanvas.toDataURL()
+        loadingAnimation: image.toDataURL()
       });
     }
   }, {
@@ -7790,13 +7790,13 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "createResultForOrder",
     value: function createResultForOrder() {
-      var _this7 = this;
+      var _this6 = this;
 
       var corner = this.props.standard.corners.filter(function (corner) {
-        return corner.value === _this7.state.corner.value;
+        return corner.value === _this6.state.corner.value;
       });
       var hue = this.props.standard.colors.filter(function (color) {
-        return color.value === _this7.state.hue.value;
+        return color.value === _this6.state.hue.value;
       });
       if (corner.length) corner = corner[0];
       if (hue.length) hue = hue[0];
@@ -7854,7 +7854,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "makeOrder",
     value: function makeOrder() {
-      var _this8 = this;
+      var _this7 = this;
 
       this.setState({
         inProcess: true
@@ -7872,15 +7872,19 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       }
 
       response.then(function (result) {
-        var parameters = _this8.createResultForOrder();
+        var parameters = _this7.createResultForOrder();
 
-        _this8.props.onOrderClick.call(_this8, parameters);
+        _this7.props.onOrderClick.call(_this7, parameters);
 
-        _this8.alert.success('Заказ принят в обработку');
+        _this7.alert.success('Заказ принят в обработку');
+
+        _this7.setState({
+          preview: null
+        });
       })["catch"](function (error) {
-        _this8.alert.error('Извините, возникла сетевая ошибка');
+        _this7.alert.error('Извините, возникла сетевая ошибка');
       })["finally"](function () {
-        _this8.setState({
+        _this7.setState({
           inProcess: false
         });
       });
@@ -7888,10 +7892,10 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render(props, state, context) {
-      var _this9 = this;
+      var _this8 = this;
 
       return Object(preact_module["h"])(dist_react_loadingmask_default.a, {
-        loading: this.state.preview == null,
+        loading: this.state.preview === null,
         text: 'loading...',
         style: {
           width: '100%'
@@ -7918,7 +7922,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         className: "col text-center"
       }, Object(preact_module["h"])("p", {
         className: "title"
-      }, "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442 \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u0412\u0430\u043C \u043D\u0430\u0438\u0431\u043E\u043B\u0435\u0435 \u043F\u043E\u0434\u0445\u043E\u0434\u0438\u0442: ")))), Object(preact_module["h"])("div", {
+      }, "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442 \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u0412\u0430\u043C \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0440\u0430\u0432\u0438\u0442\u0441\u044F: ")))), Object(preact_module["h"])("div", {
         className: "container previews"
       }, Object(preact_module["h"])("div", {
         className: "row"
@@ -7928,10 +7932,11 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
           display: this.props.isEditorOpen ? 'block' : 'none'
         }
       }, Object(preact_module["h"])("div", {
-        className: "preview ".concat(this.state.selectedType === Constants.CUSTOM ? 'active' : ''),
+        className: "corner-".concat(this.state.corner.value, " preview \n\t\t\t\t\t\t\t\t\t").concat(this.state.selectedType === Constants.CUSTOM ? 'active' : ''),
         onClick: this.selectType.bind(this, Constants.CUSTOM)
       }, Object(preact_module["h"])("canvas", {
         id: "canvasPreview",
+        className: this.state.hue.value === 'gray' ? 'grayscale' : null,
         style: {
           width: "".concat(this.state.dimensions.pictureWidth, "px"),
           height: "".concat(this.state.dimensions.pictureHeight, "px"),
@@ -7942,12 +7947,17 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       }, "\u0420\u0443\u0447\u043D\u043E\u0439 \u0440\u0435\u0436\u0438\u043C")), Object(preact_module["h"])("div", {
         className: "col"
       }, Object(preact_module["h"])("div", {
-        className: "preview ".concat(this.state.selectedType === Constants.GENERATED ? 'active' : ''),
+        className: "corner-".concat(this.state.corner.value, " preview \n\t\t\t\t\t\t\t\t\t").concat(this.state.preview === null ? 'preloader-scan' : '', "\n\t\t\t\t\t\t\t\t\t").concat(this.state.selectedType === Constants.GENERATED ? 'active' : ''),
         onClick: this.selectType.bind(this, Constants.GENERATED)
-      }, Object(preact_module["h"])("svg", {
+      }, Object(preact_module["h"])("div", {
+        className: "diode"
+      }, Object(preact_module["h"])("div", {
+        className: "laser"
+      })), Object(preact_module["h"])("svg", {
         width: "".concat(this.state.dimensions.pictureWidth, "px"),
         height: "".concat(this.state.dimensions.pictureHeight, "px"),
-        version: "1.1"
+        version: "1.1",
+        className: this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : null
       }, Object(preact_module["h"])("image", {
         xlinkHref: this.state.preview || this.state.loadingAnimation,
         x: "0",
@@ -7976,7 +7986,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         className: "col"
       }, Object(preact_module["h"])(options_Options, {
         onOptionChanged: function onOptionChanged(option) {
-          return _this9.sendOptionsToCallback.call(_this9, option);
+          return _this8.sendOptionsToCallback.call(_this8, option);
         },
         options: this.props.standard.extraOptions
       })))), Object(preact_module["h"])("div", {
@@ -8212,14 +8222,10 @@ var app_App = /*#__PURE__*/function (_Component) {
 
       if (selectedStandard.length > 0) {
         selectedStandard = selectedStandard[0];
-        if (!selectedStandard.colors) selectedStandard['colors'] = {
-          "gray": "Ч/Б",
-          "color": "Цветное"
-        };
 
         _this.setState({
           selectedStandard: selectedStandard,
-          price: "".concat(selectedStandard.price.value, " ").concat(selectedStandard.price.currency)
+          price: selectedStandard.price.text
         });
       }
     };
@@ -8272,6 +8278,9 @@ var app_App = /*#__PURE__*/function (_Component) {
             }
           });
 
+          var uploadPhotoButton = document.getElementById("uploadPhoto");
+          uploadPhotoButton.removeAttribute("disabled");
+          uploadPhotoButton.innerHTML = "";
           react_alert_useAlert().error("Извините, Ваша фотография не соответствует требованиям");
         } else {
           _this.setState({
@@ -8354,6 +8363,7 @@ var app_App = /*#__PURE__*/function (_Component) {
         previewSize: this.props.options.preview.size,
         serviceHost: this.props.options.serviceHost,
         debug: this.props.options.debug,
+        removeBackground: this.props.options.removeBackground,
         onOrderClick: this.props.options.onOrderClick,
         onOptionChanged: this.props.options.onOptionChanged,
         onRemoveBackground: function onRemoveBackground(url) {
@@ -8398,6 +8408,7 @@ var app_App = /*#__PURE__*/function (_Component) {
         className: "text-center mt-3"
       }, Object(preact_module["h"])("button", {
         className: "btn btn-outline-success",
+        id: "uploadPhoto",
         onClick: this.props.options.onRequestPhotoClick.bind(this)
       }, "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0444\u043E\u0442\u043E")))));
     }
@@ -8627,9 +8638,10 @@ var src_PhotoPassport = /*#__PURE__*/function (_Component) {
       standards: photo_standards,
       // list of objects with document specification
       corners: {},
+      removeBackground: false,
       photoRestriction: {
-        minWidth: 425,
-        minHeight: 400,
+        minWidth: 25,
+        minHeight: 40,
         maxWidth: 5000,
         maxHeight: 5000
       }
@@ -8640,7 +8652,8 @@ var src_PhotoPassport = /*#__PURE__*/function (_Component) {
       offset: '20px',
       transition: transitions.SCALE,
       containerStyle: {
-        fontSize: '12px'
+        fontSize: '12px',
+        zIndex: 12
       }
     };
     var missingParams = [];

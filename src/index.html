@@ -68,6 +68,16 @@
 			"name": "Снизу справа",
 			"id": "15",
 			"value": "BR"
+		},
+		{
+			"name": "Сверху справа",
+			"id": "16",
+			"value": "TR"
+		},
+		{
+			"name": "Сверху слева",
+			"id": "17",
+			"value": "TL"
 		}
 	];
 
@@ -91,10 +101,11 @@
 			"text": "Afghanistan ID Card (e-tazkira) 3x4cm",
 			"country": "Afghanistan",
 			"dimensions": {
-				"pictureWidth": 30.0,
-				"pictureHeight": 40.0,
-				"faceHeight": 30.0,
-				"crownTop": 2.5
+				"pictureWidth": 200.0,
+				"pictureHeight": 300.0,
+				"faceHeight": 200.0,
+				"crownTop": 25,
+                "units":"px"
 			},
 			"extraOptions": eOpts,
 			"price":{
@@ -109,11 +120,11 @@
 			"text": "Ukrainian ID Card (e-tazkira) 3x4cm",
 			"country": "Ukraine",
 			"dimensions": {
-				"pictureWidth": 394,
-				"pictureHeight": 506,
-				"faceHeight": 500,
+				"pictureWidth": 30,
+				"pictureHeight": 40,
+				"faceHeight": 27,
 				"crownTop": 1,
-                "units":"px"
+                "units":"mm"
 			},
 			"extraOptions": eOpts,
 			"price":{
@@ -128,8 +139,9 @@
 	let pp = new PhotoPassport({
         container: "app",
         preview:{
-        	size: 300,
+        	size: 500,
         },
+		removeBackground: false,
         serviceHost: 'http://localhost:4000',
         debug: false,
         tips:[
@@ -156,7 +168,7 @@
 			console.log('order');
         },
 		onRequestPhotoClick: () =>{
-			pp.setImage('http://localhost:8080/src/assets/Robert-Downey-Jr-c.jpg')
+			pp.setImage('http://localhost:8080/src/assets/original-without-bg.jpg')
         },
 		onOptionChanged: (options) => {
 			//console.log(options);

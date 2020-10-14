@@ -24,9 +24,10 @@ class PhotoPassport extends Component{
 			debug: false, // debug mode
 			standards: photoStandards, // list of objects with document specification
 			corners: {},
+			removeBackground: false,
 			photoRestriction: {
-				minWidth: 425,
-				minHeight: 400,
+				minWidth: 25,
+				minHeight: 40,
 				maxWidth: 5000,
 				maxHeight: 5000,
 			}
@@ -39,6 +40,7 @@ class PhotoPassport extends Component{
 			transition: transitions.SCALE,
 			containerStyle:{
 				fontSize: '12px',
+				zIndex: 12
 			}
 		}
 
