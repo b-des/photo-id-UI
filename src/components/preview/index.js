@@ -38,6 +38,7 @@ class Preview extends Component {
 		this.corners = null;
 		this.colors = null;
 		this.state = initialState;
+		this.cropData = null;
 
 	}
 
@@ -88,16 +89,27 @@ class Preview extends Component {
 		this.setState({
 			dimensions
 		});
+		// fabric.js instance
 		this.fabric = fabric.fabric;
+
+		// image instance to storing custom preview picture 
+		this._watermakrImage = new Image();
+
+		// image instance to storing custom picture for rendering 
+		this._renderImage = new Image();
+
+		// visible canvas for preview
 		this._canvas = document.querySelector('#canvasPreview');
 		this._canvas = new this.fabric.Canvas('canvasPreview');
 		this._canvas.hoverCursor = 'pointer';
 		this._canvas.selection = false;
+
+		// tmp canvas to store image for rendering
 		if (this.props.debug) {
-			this._tmpCanvas = new this.fabric.Canvas('developPreview');
+			this._renderCanvas = new this.fabric.Canvas('developPreview');
 		}
 		else {
-			this._tmpCanvas = new this.fabric.Canvas();
+			this._renderCanvas = new this.fabric.Canvas();
 		}
 	}
 
@@ -150,110 +162,115 @@ class Preview extends Component {
 	}
 
 
-	cropImage(data) {
-		// calculate size of bounding canvas for image after rotation
-		let nSize = getBoundingRectangleAfterRotate(this._img.width, this._img.height, 90 - data.angle.deg);
-
-		// center of bounding canvas
-		let cx = nSize.width / 2;
-		let cy = nSize.height / 2;
-
-		let cropArea = data.cropArea.map((item) => {
-			// convert point from percents to absolute coordinate
-			item = {
-				x: this._img.width / 100 * item.x,
-				y: this._img.height / 100 * item.y
-			};
-			// increase each point applying new host size
-			item = {
-				x: item.x + (nSize.width - this._img.width) / 2,
-				y: item.y + (nSize.height - this._img.height) / 2
-			};
-			// transform point according to rotation
-			let transformedPoint = transformCoordinateAfterRotate([cx, cy], item, (90 - data.angle.deg) * Math.PI / 180);
-			return {
-				x: transformedPoint[0],
-				y: transformedPoint[1]
-			};
-		});
-
-		let borderOffsetLeft = 0;
-		let borderOffsetTop = cropArea[0].y < 0 ? cropArea[0].y : 0;
+	cropImage(data, generateRender = false) {
+		return new Promise((resolve, reject) => {
 
 
-		this._tmpCanvas.clear();
-		let tmpImgInstance = new this.fabric.Image(this._img, {
-			angle: 0,
-			width: this._img.width,
-			height: this._img.height,
-			left: (nSize.width - this._img.width) / 2,
-			top: (nSize.height - this._img.height) / 2 - borderOffsetTop,
-			scaleX: 1,
-			scaleY: 1
-		});
+			this.cropData = data;
+			// calculate size of bounding canvas for image after rotation
+			let nSize = getBoundingRectangleAfterRotate(this._watermakrImage.width, this._watermakrImage.height, 90 - data.angle.deg);
 
-		// rotate image inside canvas
-		tmpImgInstance.rotate(90 - data.angle.deg);
+			// center of bounding canvas
+			let cx = nSize.width / 2;
+			let cy = nSize.height / 2;
 
-		this._tmpCanvas.setWidth(nSize.width);
-		this._tmpCanvas.setHeight(nSize.height);
-		this._tmpCanvas.backgroundColor = '#fff';
-		this._tmpCanvas.add(tmpImgInstance);
-
-		if (this.props.debug) {
-			this._tmpCanvas.add(new this.fabric.Line([cropArea[0].x, cropArea[0].y, cropArea[1].x, cropArea[1].y], { stroke: 'red' }));
-			this._tmpCanvas.add(new this.fabric.Line([cropArea[1].x, cropArea[1].y, cropArea[2].x, cropArea[2].y], { stroke: 'red' }));
-			this._tmpCanvas.add(new this.fabric.Line([cropArea[2].x, cropArea[2].y, cropArea[3].x, cropArea[3].y], { stroke: 'red' }));
-			this._tmpCanvas.add(new this.fabric.Line([cropArea[3].x, cropArea[3].y, cropArea[0].x, cropArea[0].y], { stroke: 'red' }));
-		}
-		this._tmpCanvas.renderAll();
-
-		this._canvas.clear();
-
-		let cropAreaWidth = (cropArea[0].x - cropArea[1].x);
-		let cropAreaHeight = (cropArea[2].y - cropArea[1].y);
-
-		let canvasWidth = this._canvas.getWidth();
-		let canvasHeight = this._canvas.getHeight();
-
-		let tmpImage = new Image();
-		tmpImage.src = this._tmpCanvas.toDataURL();
-
-
-		tmpImage.onload = () => {
-			let croppedImgInstance = new this.fabric.Image(tmpImage, {
-				angle: 0,
-				width: cropAreaWidth,
-				height: cropAreaHeight,
-				left: 0,
-				top: 0,
-				cropX: cropArea[1].x,
-				cropY: cropArea[1].y,
-				selectable: false
-
+			// calculate coordinates of cropping area
+			let cropArea = data.cropArea.map((item) => {
+				// convert point from percents to absolute coordinate
+				item = {
+					x: this._watermakrImage.width / 100 * item.x,
+					y: this._watermakrImage.height / 100 * item.y
+				};
+				// increase each point applying new host size
+				item = {
+					x: item.x + (nSize.width - this._watermakrImage.width) / 2,
+					y: item.y + (nSize.height - this._watermakrImage.height) / 2
+				};
+				// transform point according to rotation
+				let transformedPoint = transformCoordinateAfterRotate([cx, cy], item, (90 - data.angle.deg) * Math.PI / 180);
+				return {
+					x: transformedPoint[0],
+					y: transformedPoint[1]
+				};
 			});
-			// put cropped image to tmp canvas
-			// this canvas use for saving custom photo
-			this._tmpCanvas.clear();
-			this._tmpCanvas.setWidth(croppedImgInstance.width);
-			this._tmpCanvas.setHeight(croppedImgInstance.height);
-			this._tmpCanvas.add(croppedImgInstance);
 
-			// copy image for preview
-			let imageCopy = Object.create(croppedImgInstance);
-			// scale image to fit preview canvas size
-			imageCopy.scaleToHeight(canvasHeight);
-			imageCopy.scaleToWidth(canvasWidth);
-			this._canvas.add(imageCopy);
-		};
+
+			let borderOffsetTop = cropArea[0].y < 0 ? cropArea[0].y : 0;
+			let imageParams = {
+				angle: 0,
+				width: this._watermakrImage.width,
+				height: this._watermakrImage.height,
+				left: (nSize.width - this._watermakrImage.width) / 2,
+				top: (nSize.height - this._watermakrImage.height) / 2 - borderOffsetTop,
+				scaleX: 1,
+				scaleY: 1
+			};
+			// create fabric.js object from image
+			let fabricImageWithWatermark = new this.fabric.Image(generateRender ? this._renderImage : this._watermakrImage, imageParams);
+
+			// rotate image inside canvas
+			fabricImageWithWatermark.rotate(90 - data.angle.deg);
+
+			this._renderCanvas.clear();
+			// apply new size for render canvas
+			this._renderCanvas.setWidth(nSize.width);
+			this._renderCanvas.setHeight(nSize.height);
+			this._renderCanvas.backgroundColor = '#fff';
+			// add image to canvas
+			this._renderCanvas.add(fabricImageWithWatermark);
+			//this._renderCanvas.renderAll();
+
+			let cropAreaWidth = (cropArea[0].x - cropArea[1].x);
+			let cropAreaHeight = (cropArea[2].y - cropArea[1].y);
+
+			let canvasWidth = this._canvas.getWidth();
+			let canvasHeight = this._canvas.getHeight();
+
+			// create image from canvas
+			let tmpImage = new Image();
+			tmpImage.src = this._renderCanvas.toDataURL();
+
+			tmpImage.onload = () => {
+				// get cropped image from canvas
+				let croppedImgInstance = new this.fabric.Image(tmpImage, {
+					angle: 0,
+					width: cropAreaWidth,
+					height: cropAreaHeight,
+					left: 0,
+					top: 0,
+					cropX: cropArea[1].x,
+					cropY: cropArea[1].y,
+					selectable: false
+
+				});
+				// put cropped image to render canvas
+				// this canvas use for saving custom photo
+				this._renderCanvas.clear();
+				this._renderCanvas.setWidth(croppedImgInstance.width);
+				this._renderCanvas.setHeight(croppedImgInstance.height);
+				this._renderCanvas.add(croppedImgInstance);
+
+				if(!generateRender){
+					// copy image for preview
+					let imageCopy = Object.create(croppedImgInstance);
+					// scale image to fit preview canvas size
+					imageCopy.scaleToHeight(canvasHeight);
+					imageCopy.scaleToWidth(canvasWidth);
+					this._canvas.clear();
+					// add image to preview canvas
+					this._canvas.add(imageCopy);
+				}
+
+				resolve();
+			};
+		});
 	}
 
 	loadGeneratedPreview(prevProps) {
 		if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
 			// create image from url
-			this._img = new Image();
-			this._img.src = this.props.imageUrl;
-			this._img.onload = () => {
+			this._watermakrImage.src = this.props.imageUrl;
+			this._watermakrImage.onload = () => {
 				this.setState({
 					preview: null,
 					originalImageUrl: this.props.imageUrl
@@ -315,10 +332,11 @@ class Preview extends Component {
 				uid: response.data.result.uid,
 				noBgImageUrl: response.data.result.url
 			});
-			this._img.src = response.data.result.watermark_url;
-			this._img.onload = () => {
+			this._renderImage.src = response.data.result.url;
+			this._watermakrImage.src = response.data.result.watermark_url;
+			this._watermakrImage.onload = () => {
 			};
-			this.props.onRemoveBackground(response.data.result.watermark_url);
+			this.props.onRemoveBackground(response.data.result.watermark_url, response.data.result.is_background_removed);
 		}
 		else {
 			this.networkError();
@@ -334,8 +352,9 @@ class Preview extends Component {
 	}
 
 	saveCustomImage() {
+
 		let payload = {
-			b64: this._tmpCanvas.toDataURL(),
+			b64: null,
 			uid: this.state.uid,
 			hue: this.state.hue.value,
 			corner: this.state.corner.value
@@ -353,8 +372,11 @@ class Preview extends Component {
 		if (this.props.standard.extension)
 			payload['ext'] = this.props.standard.extension;
 
+		return this.cropImage(this.cropData, true).then(r => {
+			payload.b64 = this._renderCanvas.toDataURL();
+			return axios.post(`${this.props.serviceHost}/api/save-photo-b64`, payload);
+		});
 
-		return axios.post(`${this.props.serviceHost}/api/save-photo-b64`, payload);
 	}
 
 	saveGeneratedImage() {
@@ -364,7 +386,7 @@ class Preview extends Component {
 		// if dimension of final photo is present in pixels
 		// save image without scaling
 		if (!dimensions.units || dimensions.units === 'mm') {
-			scale = this._img.naturalWidth / 2 / dimensions.pictureWidth;
+			scale = this._watermakrImage.naturalWidth / 2 / dimensions.pictureWidth;
 		}
 
 		let payload = {
@@ -394,9 +416,9 @@ class Preview extends Component {
 		//animatedCanvas.setWidth(250);
 		//animatedCanvas.setWidth(333);
 
-		let image = new this.fabric.Image(this._img, {
-			width: this._img.naturalWidth,
-			height: this._img.naturalHeight,
+		let image = new this.fabric.Image(this._watermakrImage, {
+			width: this._watermakrImage.naturalWidth,
+			height: this._watermakrImage.naturalHeight,
 			left: 0,
 			top: 0
 		});
@@ -444,6 +466,16 @@ class Preview extends Component {
 		this.setState({
 			loadingAnimation: image.toDataURL()
 		});
+
+		let animation = `@keyframes scanning {
+          50% {
+            transform: translateY(${this._canvas.height}px);
+          }
+        }`;
+		let style = document.createElement('style');
+		style.innerHTML = animation;
+		let ref = document.querySelector('script');
+		ref.parentNode.insertBefore(style, ref);
 
 	}
 
@@ -578,9 +610,9 @@ class Preview extends Component {
 			let parameters = this.createResultForOrder();
 			this.props.onOrderClick.call(this, parameters);
 			this.alert.success('Заказ принят в обработку');
-			this.setState({
+			/*this.setState({
 				preview: null
-			});
+			});*/
 		}).catch(error => {
 			this.alert.error('Извините, возникла сетевая ошибка');
 		}).finally(() => {
@@ -620,7 +652,7 @@ class Preview extends Component {
 									${this.state.selectedType === Constants.CUSTOM ? 'active' : ''}`}
 									onClick={this.selectType.bind(this, Constants.CUSTOM)}>
 									<canvas id="canvasPreview"
-											className={this.state.hue.value === 'gray' ? 'grayscale' : null}
+											className={`${this.state.hue.value === 'gray' ? 'grayscale' : ''} lower-canvas`}
 											style={{
 												width: `${this.state.dimensions.pictureWidth}px`,
 												height: `${this.state.dimensions.pictureHeight}px`, background: 'none'
@@ -692,47 +724,55 @@ class Preview extends Component {
 									<div className="form-row justify-content-end align-items-center">
 										{this.colors && this.colors.length > 1 &&
 										<div className="col-md-auto col-sm-1">
-											<div className="input-group mb-2">
-												{this.colors}
+											<div className="form-group">
+												<div className="input-group mb-2">
+													{this.colors}
+												</div>
 											</div>
 										</div>
 										}
 										{this.corners && this.corners.length > 1 &&
 										<div className="col-md-auto col-sm-1">
-											<div className="input-group mb-2">
-												<select onChange={this.handleCornerChange.bind(this)}
-														className={'custom-select'}>
-													{this.corners}
-												</select>
+											<div className="form-group">
+												<div className="input-group">
+													<select onChange={this.handleCornerChange.bind(this)}
+															className={'custom-select'}>
+														{this.corners}
+													</select>
+												</div>
 											</div>
 										</div>
 										}
 										<div className="col-md-auto col-sm-1">
-											<div className="input-group mb-2">
-												<div className="input-group-prepend">
-													<div className="input-group-text">
-														<label>Количество:</label>
+											<div className="form-group">
+												<div className="input-group">
+													<div className="input-group-prepend">
+														<div className="input-group-text">
+															<label>Количество:</label>
+														</div>
 													</div>
+													<input type="number" className="form-control" min="1" max="99"
+														   value={this.state.quantity}
+														   onChange={this.handleQuantityChange.bind(this)}/>
 												</div>
-												<input type="number" className="form-control" min="1" max="99"
-													   value={this.state.quantity}
-													   onChange={this.handleQuantityChange.bind(this)}/>
 											</div>
 										</div>
 										<div className="col-md-auto col-sm-1">
-
-											<button className={'btn btn-outline-primary mb-2 w-100'}
-													disabled={this.state.inProcess} onClick={this.makeOrder.bind(this)}>
-												{this.state.inProcess ?
-													<div>
+											<div className="form-group">
+												<button className={'btn btn-outline-primary w-100 btn-order'}
+														disabled={this.state.inProcess}
+														onClick={this.makeOrder.bind(this)}>
+													{this.state.inProcess ?
+														<div>
 													<span className="spinner-border spinner-border-sm" role="status"
 														  aria-hidden="true"/>
-													</div>
-													:
-													`Заказать (${this.props.price})`
-												}
+														</div>
+														:
+														`Заказать (${this.props.price})`
+													}
 
-											</button>
+												</button>
+											</div>
 										</div>
 									</div>
 								}

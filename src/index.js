@@ -19,6 +19,7 @@ class PhotoPassport extends Component{
 			onRequestPhotoClick: () => {}, // callback fire when user click add photo
 			onOrderClick: () => {}, // callback for order click
 			onOptionChanged: () => {}, // callback for option change
+			onBackgroundRemoved: () => {}, // callback for option change
 			container: null, // id of container
 			serviceHost: null, // url for backend
 			debug: false, // debug mode

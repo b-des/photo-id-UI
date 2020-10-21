@@ -7303,6 +7303,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
     _this.corners = null;
     _this.colors = null;
     _this.state = initialState;
+    _this.cropData = null;
     return _this;
   }
 
@@ -7343,17 +7344,23 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
     value: function initPreviewCanvas(dimensions) {
       this.setState({
         dimensions: dimensions
-      });
-      this.fabric = fabric_min_default.a.fabric;
+      }); // fabric.js instance
+
+      this.fabric = fabric_min_default.a.fabric; // image instance to storing custom preview picture 
+
+      this._watermakrImage = new Image(); // image instance to storing custom picture for rendering 
+
+      this._renderImage = new Image(); // visible canvas for preview
+
       this._canvas = document.querySelector('#canvasPreview');
       this._canvas = new this.fabric.Canvas('canvasPreview');
       this._canvas.hoverCursor = 'pointer';
-      this._canvas.selection = false;
+      this._canvas.selection = false; // tmp canvas to store image for rendering
 
       if (this.props.debug) {
-        this._tmpCanvas = new this.fabric.Canvas('developPreview');
+        this._renderCanvas = new this.fabric.Canvas('developPreview');
       } else {
-        this._tmpCanvas = new this.fabric.Canvas();
+        this._renderCanvas = new this.fabric.Canvas();
       }
     }
   }, {
@@ -7424,115 +7431,109 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
     value: function cropImage(data) {
       var _this4 = this;
 
-      // calculate size of bounding canvas for image after rotation
-      var nSize = getBoundingRectangleAfterRotate(this._img.width, this._img.height, 90 - data.angle.deg); // center of bounding canvas
+      var generateRender = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      return new Promise(function (resolve, reject) {
+        _this4.cropData = data; // calculate size of bounding canvas for image after rotation
 
-      var cx = nSize.width / 2;
-      var cy = nSize.height / 2;
-      var cropArea = data.cropArea.map(function (item) {
-        // convert point from percents to absolute coordinate
-        item = {
-          x: _this4._img.width / 100 * item.x,
-          y: _this4._img.height / 100 * item.y
-        }; // increase each point applying new host size
+        var nSize = getBoundingRectangleAfterRotate(_this4._watermakrImage.width, _this4._watermakrImage.height, 90 - data.angle.deg); // center of bounding canvas
 
-        item = {
-          x: item.x + (nSize.width - _this4._img.width) / 2,
-          y: item.y + (nSize.height - _this4._img.height) / 2
-        }; // transform point according to rotation
+        var cx = nSize.width / 2;
+        var cy = nSize.height / 2; // calculate coordinates of cropping area
 
-        var transformedPoint = transformCoordinateAfterRotate([cx, cy], item, (90 - data.angle.deg) * Math.PI / 180);
-        return {
-          x: transformedPoint[0],
-          y: transformedPoint[1]
+        var cropArea = data.cropArea.map(function (item) {
+          // convert point from percents to absolute coordinate
+          item = {
+            x: _this4._watermakrImage.width / 100 * item.x,
+            y: _this4._watermakrImage.height / 100 * item.y
+          }; // increase each point applying new host size
+
+          item = {
+            x: item.x + (nSize.width - _this4._watermakrImage.width) / 2,
+            y: item.y + (nSize.height - _this4._watermakrImage.height) / 2
+          }; // transform point according to rotation
+
+          var transformedPoint = transformCoordinateAfterRotate([cx, cy], item, (90 - data.angle.deg) * Math.PI / 180);
+          return {
+            x: transformedPoint[0],
+            y: transformedPoint[1]
+          };
+        });
+        var borderOffsetTop = cropArea[0].y < 0 ? cropArea[0].y : 0;
+        var imageParams = {
+          angle: 0,
+          width: _this4._watermakrImage.width,
+          height: _this4._watermakrImage.height,
+          left: (nSize.width - _this4._watermakrImage.width) / 2,
+          top: (nSize.height - _this4._watermakrImage.height) / 2 - borderOffsetTop,
+          scaleX: 1,
+          scaleY: 1
+        }; // create fabric.js object from image
+
+        var fabricImageWithWatermark = new _this4.fabric.Image(generateRender ? _this4._renderImage : _this4._watermakrImage, imageParams); // rotate image inside canvas
+
+        fabricImageWithWatermark.rotate(90 - data.angle.deg);
+
+        _this4._renderCanvas.clear(); // apply new size for render canvas
+
+
+        _this4._renderCanvas.setWidth(nSize.width);
+
+        _this4._renderCanvas.setHeight(nSize.height);
+
+        _this4._renderCanvas.backgroundColor = '#fff'; // add image to canvas
+
+        _this4._renderCanvas.add(fabricImageWithWatermark); //this._renderCanvas.renderAll();
+
+
+        var cropAreaWidth = cropArea[0].x - cropArea[1].x;
+        var cropAreaHeight = cropArea[2].y - cropArea[1].y;
+
+        var canvasWidth = _this4._canvas.getWidth();
+
+        var canvasHeight = _this4._canvas.getHeight(); // create image from canvas
+
+
+        var tmpImage = new Image();
+        tmpImage.src = _this4._renderCanvas.toDataURL();
+
+        tmpImage.onload = function () {
+          // get cropped image from canvas
+          var croppedImgInstance = new _this4.fabric.Image(tmpImage, {
+            angle: 0,
+            width: cropAreaWidth,
+            height: cropAreaHeight,
+            left: 0,
+            top: 0,
+            cropX: cropArea[1].x,
+            cropY: cropArea[1].y,
+            selectable: false
+          }); // put cropped image to render canvas
+          // this canvas use for saving custom photo
+
+          _this4._renderCanvas.clear();
+
+          _this4._renderCanvas.setWidth(croppedImgInstance.width);
+
+          _this4._renderCanvas.setHeight(croppedImgInstance.height);
+
+          _this4._renderCanvas.add(croppedImgInstance);
+
+          if (!generateRender) {
+            // copy image for preview
+            var imageCopy = Object.create(croppedImgInstance); // scale image to fit preview canvas size
+
+            imageCopy.scaleToHeight(canvasHeight);
+            imageCopy.scaleToWidth(canvasWidth);
+
+            _this4._canvas.clear(); // add image to preview canvas
+
+
+            _this4._canvas.add(imageCopy);
+          }
+
+          resolve();
         };
       });
-      var borderOffsetLeft = 0;
-      var borderOffsetTop = cropArea[0].y < 0 ? cropArea[0].y : 0;
-
-      this._tmpCanvas.clear();
-
-      var tmpImgInstance = new this.fabric.Image(this._img, {
-        angle: 0,
-        width: this._img.width,
-        height: this._img.height,
-        left: (nSize.width - this._img.width) / 2,
-        top: (nSize.height - this._img.height) / 2 - borderOffsetTop,
-        scaleX: 1,
-        scaleY: 1
-      }); // rotate image inside canvas
-
-      tmpImgInstance.rotate(90 - data.angle.deg);
-
-      this._tmpCanvas.setWidth(nSize.width);
-
-      this._tmpCanvas.setHeight(nSize.height);
-
-      this._tmpCanvas.backgroundColor = '#fff';
-
-      this._tmpCanvas.add(tmpImgInstance);
-
-      if (this.props.debug) {
-        this._tmpCanvas.add(new this.fabric.Line([cropArea[0].x, cropArea[0].y, cropArea[1].x, cropArea[1].y], {
-          stroke: 'red'
-        }));
-
-        this._tmpCanvas.add(new this.fabric.Line([cropArea[1].x, cropArea[1].y, cropArea[2].x, cropArea[2].y], {
-          stroke: 'red'
-        }));
-
-        this._tmpCanvas.add(new this.fabric.Line([cropArea[2].x, cropArea[2].y, cropArea[3].x, cropArea[3].y], {
-          stroke: 'red'
-        }));
-
-        this._tmpCanvas.add(new this.fabric.Line([cropArea[3].x, cropArea[3].y, cropArea[0].x, cropArea[0].y], {
-          stroke: 'red'
-        }));
-      }
-
-      this._tmpCanvas.renderAll();
-
-      this._canvas.clear();
-
-      var cropAreaWidth = cropArea[0].x - cropArea[1].x;
-      var cropAreaHeight = cropArea[2].y - cropArea[1].y;
-
-      var canvasWidth = this._canvas.getWidth();
-
-      var canvasHeight = this._canvas.getHeight();
-
-      var tmpImage = new Image();
-      tmpImage.src = this._tmpCanvas.toDataURL();
-
-      tmpImage.onload = function () {
-        var croppedImgInstance = new _this4.fabric.Image(tmpImage, {
-          angle: 0,
-          width: cropAreaWidth,
-          height: cropAreaHeight,
-          left: 0,
-          top: 0,
-          cropX: cropArea[1].x,
-          cropY: cropArea[1].y,
-          selectable: false
-        }); // put cropped image to tmp canvas
-        // this canvas use for saving custom photo
-
-        _this4._tmpCanvas.clear();
-
-        _this4._tmpCanvas.setWidth(croppedImgInstance.width);
-
-        _this4._tmpCanvas.setHeight(croppedImgInstance.height);
-
-        _this4._tmpCanvas.add(croppedImgInstance); // copy image for preview
-
-
-        var imageCopy = Object.create(croppedImgInstance); // scale image to fit preview canvas size
-
-        imageCopy.scaleToHeight(canvasHeight);
-        imageCopy.scaleToWidth(canvasWidth);
-
-        _this4._canvas.add(imageCopy);
-      };
     }
   }, {
     key: "loadGeneratedPreview",
@@ -7541,10 +7542,9 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
 
       if (this.props.imageUrl && prevProps.imageUrl !== this.props.imageUrl) {
         // create image from url
-        this._img = new Image();
-        this._img.src = this.props.imageUrl;
+        this._watermakrImage.src = this.props.imageUrl;
 
-        this._img.onload = function () {
+        this._watermakrImage.onload = function () {
           _this5.setState({
             preview: null,
             originalImageUrl: _this5.props.imageUrl
@@ -7607,11 +7607,12 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
           uid: response.data.result.uid,
           noBgImageUrl: response.data.result.url
         });
-        this._img.src = response.data.result.watermark_url;
+        this._renderImage.src = response.data.result.url;
+        this._watermakrImage.src = response.data.result.watermark_url;
 
-        this._img.onload = function () {};
+        this._watermakrImage.onload = function () {};
 
-        this.props.onRemoveBackground(response.data.result.watermark_url);
+        this.props.onRemoveBackground(response.data.result.watermark_url, response.data.result.is_background_removed);
       } else {
         this.networkError();
       }
@@ -7628,8 +7629,10 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "saveCustomImage",
     value: function saveCustomImage() {
+      var _this6 = this;
+
       var payload = {
-        b64: this._tmpCanvas.toDataURL(),
+        b64: null,
         uid: this.state.uid,
         hue: this.state.hue.value,
         corner: this.state.corner.value
@@ -7641,7 +7644,10 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       }
 
       if (this.props.standard.extension) payload['ext'] = this.props.standard.extension;
-      return axios_default.a.post("".concat(this.props.serviceHost, "/api/save-photo-b64"), payload);
+      return this.cropImage(this.cropData, true).then(function (r) {
+        payload.b64 = _this6._renderCanvas.toDataURL();
+        return axios_default.a.post("".concat(_this6.props.serviceHost, "/api/save-photo-b64"), payload);
+      });
     }
   }, {
     key: "saveGeneratedImage",
@@ -7651,7 +7657,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       // save image without scaling
 
       if (!dimensions.units || dimensions.units === 'mm') {
-        scale = this._img.naturalWidth / 2 / dimensions.pictureWidth;
+        scale = this._watermakrImage.naturalWidth / 2 / dimensions.pictureWidth;
       }
 
       var payload = {
@@ -7678,9 +7684,9 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       //this.state.dimensions.pictureWidth * this.dimensionMultiplier
       //animatedCanvas.setWidth(250);
       //animatedCanvas.setWidth(333);
-      var image = new this.fabric.Image(this._img, {
-        width: this._img.naturalWidth,
-        height: this._img.naturalHeight,
+      var image = new this.fabric.Image(this._watermakrImage, {
+        width: this._watermakrImage.naturalWidth,
+        height: this._watermakrImage.naturalHeight,
         left: 0,
         top: 0
       });
@@ -7718,6 +7724,11 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       this.setState({
         loadingAnimation: image.toDataURL()
       });
+      var animation = "@keyframes scanning {\n          50% {\n            transform: translateY(".concat(this._canvas.height, "px);\n          }\n        }");
+      var style = document.createElement('style');
+      style.innerHTML = animation;
+      var ref = document.querySelector('script');
+      ref.parentNode.insertBefore(style, ref);
     }
   }, {
     key: "selectType",
@@ -7790,13 +7801,13 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "createResultForOrder",
     value: function createResultForOrder() {
-      var _this6 = this;
+      var _this7 = this;
 
       var corner = this.props.standard.corners.filter(function (corner) {
-        return corner.value === _this6.state.corner.value;
+        return corner.value === _this7.state.corner.value;
       });
       var hue = this.props.standard.colors.filter(function (color) {
-        return color.value === _this6.state.hue.value;
+        return color.value === _this7.state.hue.value;
       });
       if (corner.length) corner = corner[0];
       if (hue.length) hue = hue[0];
@@ -7854,7 +7865,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "makeOrder",
     value: function makeOrder() {
-      var _this7 = this;
+      var _this8 = this;
 
       this.setState({
         inProcess: true
@@ -7872,19 +7883,19 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       }
 
       response.then(function (result) {
-        var parameters = _this7.createResultForOrder();
+        var parameters = _this8.createResultForOrder();
 
-        _this7.props.onOrderClick.call(_this7, parameters);
+        _this8.props.onOrderClick.call(_this8, parameters);
 
-        _this7.alert.success('Заказ принят в обработку');
+        _this8.alert.success('Заказ принят в обработку');
+        /*this.setState({
+        	preview: null
+        });*/
 
-        _this7.setState({
-          preview: null
-        });
       })["catch"](function (error) {
-        _this7.alert.error('Извините, возникла сетевая ошибка');
+        _this8.alert.error('Извините, возникла сетевая ошибка');
       })["finally"](function () {
-        _this7.setState({
+        _this8.setState({
           inProcess: false
         });
       });
@@ -7892,7 +7903,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render(props, state, context) {
-      var _this8 = this;
+      var _this9 = this;
 
       return Object(preact_module["h"])(dist_react_loadingmask_default.a, {
         loading: this.state.preview === null,
@@ -7936,7 +7947,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         onClick: this.selectType.bind(this, Constants.CUSTOM)
       }, Object(preact_module["h"])("canvas", {
         id: "canvasPreview",
-        className: this.state.hue.value === 'gray' ? 'grayscale' : null,
+        className: "".concat(this.state.hue.value === 'gray' ? 'grayscale' : '', " lower-canvas"),
         style: {
           width: "".concat(this.state.dimensions.pictureWidth, "px"),
           height: "".concat(this.state.dimensions.pictureHeight, "px"),
@@ -7986,7 +7997,7 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         className: "col"
       }, Object(preact_module["h"])(options_Options, {
         onOptionChanged: function onOptionChanged(option) {
-          return _this8.sendOptionsToCallback.call(_this8, option);
+          return _this9.sendOptionsToCallback.call(_this9, option);
         },
         options: this.props.standard.extraOptions
       })))), Object(preact_module["h"])("div", {
@@ -8001,18 +8012,24 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
       }, this.colors && this.colors.length > 1 && Object(preact_module["h"])("div", {
         className: "col-md-auto col-sm-1"
       }, Object(preact_module["h"])("div", {
-        className: "input-group mb-2"
-      }, this.colors)), this.corners && this.corners.length > 1 && Object(preact_module["h"])("div", {
-        className: "col-md-auto col-sm-1"
+        className: "form-group"
       }, Object(preact_module["h"])("div", {
         className: "input-group mb-2"
+      }, this.colors))), this.corners && this.corners.length > 1 && Object(preact_module["h"])("div", {
+        className: "col-md-auto col-sm-1"
+      }, Object(preact_module["h"])("div", {
+        className: "form-group"
+      }, Object(preact_module["h"])("div", {
+        className: "input-group"
       }, Object(preact_module["h"])("select", {
         onChange: this.handleCornerChange.bind(this),
         className: 'custom-select'
-      }, this.corners))), Object(preact_module["h"])("div", {
+      }, this.corners)))), Object(preact_module["h"])("div", {
         className: "col-md-auto col-sm-1"
       }, Object(preact_module["h"])("div", {
-        className: "input-group mb-2"
+        className: "form-group"
+      }, Object(preact_module["h"])("div", {
+        className: "input-group"
       }, Object(preact_module["h"])("div", {
         className: "input-group-prepend"
       }, Object(preact_module["h"])("div", {
@@ -8024,17 +8041,19 @@ var preview_Preview = /*#__PURE__*/function (_Component) {
         max: "99",
         value: this.state.quantity,
         onChange: this.handleQuantityChange.bind(this)
-      }))), Object(preact_module["h"])("div", {
+      })))), Object(preact_module["h"])("div", {
         className: "col-md-auto col-sm-1"
+      }, Object(preact_module["h"])("div", {
+        className: "form-group"
       }, Object(preact_module["h"])("button", {
-        className: 'btn btn-outline-primary mb-2 w-100',
+        className: 'btn btn-outline-primary w-100 btn-order',
         disabled: this.state.inProcess,
         onClick: this.makeOrder.bind(this)
       }, this.state.inProcess ? Object(preact_module["h"])("div", null, Object(preact_module["h"])("span", {
         className: "spinner-border spinner-border-sm",
         role: "status",
         "aria-hidden": "true"
-      })) : "\u0417\u0430\u043A\u0430\u0437\u0430\u0442\u044C (".concat(this.props.price, ")")))))))));
+      })) : "\u0417\u0430\u043A\u0430\u0437\u0430\u0442\u044C (".concat(this.props.price, ")"))))))))));
     }
   }]);
 
@@ -8324,10 +8343,11 @@ var app_App = /*#__PURE__*/function (_Component) {
     }
   }, {
     key: "onRemoveBackground",
-    value: function onRemoveBackground(url) {
+    value: function onRemoveBackground(url, isBgRemoved) {
       this.setState({
         noBgImageUrl: url
       });
+      if (isBgRemoved) this.props.options.onBackgroundRemoved.call(this);
     }
   }, {
     key: "updatePrice",
@@ -8366,8 +8386,8 @@ var app_App = /*#__PURE__*/function (_Component) {
         removeBackground: this.props.options.removeBackground,
         onOrderClick: this.props.options.onOrderClick,
         onOptionChanged: this.props.options.onOptionChanged,
-        onRemoveBackground: function onRemoveBackground(url) {
-          return _this2.onRemoveBackground.call(_this2, url);
+        onRemoveBackground: function onRemoveBackground(url, isBgRemoved) {
+          return _this2.onRemoveBackground.call(_this2, url, isBgRemoved);
         },
         isEditorOpen: this.state.isEditorOpen,
         standard: this.state.selectedStandard,
@@ -8628,6 +8648,8 @@ var src_PhotoPassport = /*#__PURE__*/function (_Component) {
       onOrderClick: function onOrderClick() {},
       // callback for order click
       onOptionChanged: function onOptionChanged() {},
+      // callback for option change
+      onBackgroundRemoved: function onBackgroundRemoved() {},
       // callback for option change
       container: null,
       // id of container

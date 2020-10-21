@@ -178,12 +178,6 @@ body {
               opacity: 0;
             }
           }
-
-          @keyframes scanning {
-            50% {
-              transform: translateY(333px);
-            }
-          }
         }
 
       }
@@ -217,6 +211,7 @@ p.label {
   color: #535353;
 }
 
-.lower-canvas {
+.lower-canvas, .upper-canvas {
   border: none !important;
+  pointer-events: none;
 }

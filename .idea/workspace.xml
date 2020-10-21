@@ -26,7 +26,6 @@
       <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/dist/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/editor/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/editor/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
@@ -190,7 +189,11 @@
       <workItem from="1602485088549" duration="4464000" />
       <workItem from="1602516173219" duration="5611000" />
       <workItem from="1602573079314" duration="5793000" />
-      <workItem from="1602657604804" duration="2581000" />
+      <workItem from="1602657604804" duration="8007000" />
+      <workItem from="1602676769557" duration="1207000" />
+      <workItem from="1602846705973" duration="4682000" />
+      <workItem from="1602937929779" duration="1568000" />
+      <workItem from="1603278309377" duration="421000" />
     </task>
     <servers />
   </component>
@@ -226,22 +229,22 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1601726127896" />
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1602657705504">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1602947899151">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1602657705504" />
-    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1602657705503">
+    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899151" />
+    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1602947899151">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1602657705503" />
-    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1602657705502">
+    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899151" />
+    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1602947899150">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1602657705502" />
-    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1602657705503">
+    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899150" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1602947899151">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1602657705503" />
+    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899151" />
     <state x="651" y="162" width="618" height="783" key="find.popup" timestamp="1602659541687">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>

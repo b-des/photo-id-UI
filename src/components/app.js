@@ -50,10 +50,13 @@ export default class App extends Component {
 		this.setState(initialState);
 	}
 
-	onRemoveBackground(url) {
+	onRemoveBackground(url, isBgRemoved) {
 		this.setState({
 			noBgImageUrl: url
 		});
+
+		if(isBgRemoved)
+			this.props.options.onBackgroundRemoved.call(this);
 	}
 
 	handleStandardChange = (event) => {
@@ -163,7 +166,7 @@ export default class App extends Component {
 										 removeBackground={this.props.options.removeBackground}
 										 onOrderClick={this.props.options.onOrderClick}
 										 onOptionChanged={this.props.options.onOptionChanged}
-										 onRemoveBackground={url => this.onRemoveBackground.call(this, url)}
+										 onRemoveBackground={(url, isBgRemoved) => this.onRemoveBackground.call(this, url, isBgRemoved)}
 										 isEditorOpen={this.state.isEditorOpen}
 										 standard={this.state.selectedStandard}
 										 reset={this.reset.bind(this)}
