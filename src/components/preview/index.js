@@ -92,10 +92,10 @@ class Preview extends Component {
 		// fabric.js instance
 		this.fabric = fabric.fabric;
 
-		// image instance to storing custom preview picture 
+		// image instance to storing custom preview picture
 		this._watermakrImage = new Image();
 
-		// image instance to storing custom picture for rendering 
+		// image instance to storing custom picture for rendering
 		this._renderImage = new Image();
 
 		// visible canvas for preview
@@ -131,7 +131,7 @@ class Preview extends Component {
 	generateOptionsList() {
 		let standard = this.props.standard;
 		let corner = standard.corners.length ? standard.corners[0] : initialState.corner;
-		let hue = standard.colors.length ? standard.colors[0] : initialState.color;
+		let hue = standard.colors.length ? standard.colors[0] : initialState.hue;
 		let extraOptions = [];
 		if (standard.extraOptions) {
 			extraOptions = standard.extraOptions.map(option => {
@@ -296,6 +296,7 @@ class Preview extends Component {
 				previewSize: this.props.previewSize,
 				debug: this.props.debug,
 				removeBackground: this.props.removeBackground,
+				scale: 1,
 				dimensions: {
 					width: this.props.standard.dimensions.pictureWidth * c,
 					height: this.props.standard.dimensions.pictureHeight * c,
@@ -395,12 +396,12 @@ class Preview extends Component {
 			uid: this.state.uid,
 			hue: this.state.hue.value,
 			corner: this.state.corner.value,
-			scale: 2,
+			scale: scale,
 			dimensions: {
-				width: dimensions.pictureWidth * scale,
-				height: dimensions.pictureHeight * scale,
-				crown: dimensions.crownTop * scale,
-				chin: (dimensions.faceHeight + dimensions.crownTop) * scale
+				width: dimensions.pictureWidth ,
+				height: dimensions.pictureHeight ,
+				crown: dimensions.crownTop ,
+				chin: (dimensions.faceHeight + dimensions.crownTop)
 			}
 		};
 
@@ -648,7 +649,7 @@ class Preview extends Component {
 						<div className="row">
 							<div className="col" style={{ display: this.props.isEditorOpen ? 'block' : 'none' }}>
 								<div
-									className={`corner-${this.state.corner.value} preview 
+									className={`corner-${this.state.corner.value} preview
 									${this.state.selectedType === Constants.CUSTOM ? 'active' : ''}`}
 									onClick={this.selectType.bind(this, Constants.CUSTOM)}>
 									<canvas id="canvasPreview"
@@ -664,7 +665,7 @@ class Preview extends Component {
 
 							<div className="col">
 								<div
-									className={`corner-${this.state.corner.value} preview 
+									className={`corner-${this.state.corner.value} preview
 									${this.state.preview === null ? 'preloader-scan' : ''}
 									${this.state.selectedType === Constants.GENERATED ? 'active' : ''}`}
 									onClick={this.selectType.bind(this, Constants.GENERATED)}>

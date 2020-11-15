@@ -144,19 +144,20 @@ export default class App extends Component {
 
 		return (
 			<div className="container">
-				<div className="row justify-content-center">
+
 
 					{this.state.imageUrl ?
-						<Fragment>
+						<div className="row justify-content-center">
 
 							{this.state.isEditorOpen &&
-							<div style={{ display: this.state.isEditorOpen ? 'block' : 'block' }}
+							<div
 								 className="col-md-4 mx-2 app-card d-flex justify-content-center align-items-center">
 								<Editor emitter={this.emitter} imageUrl={this.state.noBgImageUrl || this.state.imageUrl}
 										standard={this.state.selectedStandard}/>
 							</div>
 							}
 
+							{this.state.imageUrl &&
 							<div className="col-md-7 mx-2 text-centered  app-card d-flex justify-content-center
 							 align-items-center preview-component">
 								<Preview emitter={this.emitter} imageUrl={this.state.imageUrl}
@@ -173,11 +174,12 @@ export default class App extends Component {
 										 price={this.state.price}
 										 showEditor={this.showEditor.bind(this)}/>
 
-							</div>
+							</div>}
 
 
-						</Fragment>
+						</div>
 						:
+						<div className="row justify-content-center">
 						<div className="col mt-3">
 							<Welcome tips={this.props.options.tips}/>
 
@@ -222,9 +224,10 @@ export default class App extends Component {
 							</div>
 							}
 						</div>
+						</div>
 					}
 
-				</div>
+
 			</div>
 		);
 	}
