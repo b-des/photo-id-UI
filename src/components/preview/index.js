@@ -625,6 +625,16 @@ class Preview extends Component {
 	}
 
 	render(props, state, context) {
+		this.colors = this.props.standard.colors && this.props.standard.colors.length ?
+			this.props.standard.colors.map(color => {
+				return <div className="form-check form-check-inline">
+					<input className="form-check-input" type="radio" name="color"
+						   checked={this.state.hue.value === color.value}
+						   onClick={this.handleColorChange.bind(this)} id={`color-${color.id}`}
+						   value={color.id}/>
+					<label className="form-check-label" htmlFor={`color-${color.id}`}>{color.name}</label>
+				</div>;
+			}) : null;
 		return (
 			<LoadingMask loading={this.state.preview === null} text={'loading...'} style={{ width: '100%' }}>
 				{this.props.debug &&

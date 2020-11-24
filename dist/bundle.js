@@ -7893,6 +7893,22 @@ function (_Component) {
     value: function render(props, state, context) {
       var _this9 = this;
 
+      this.colors = this.props.standard.colors && this.props.standard.colors.length ? this.props.standard.colors.map(function (color) {
+        return Object(preact_module["h"])("div", {
+          className: "form-check form-check-inline"
+        }, Object(preact_module["h"])("input", {
+          className: "form-check-input",
+          type: "radio",
+          name: "color",
+          checked: _this9.state.hue.value === color.value,
+          onClick: _this9.handleColorChange.bind(_this9),
+          id: "color-".concat(color.id),
+          value: color.id
+        }), Object(preact_module["h"])("label", {
+          className: "form-check-label",
+          htmlFor: "color-".concat(color.id)
+        }, color.name));
+      }) : null;
       return Object(preact_module["h"])(dist_react_loadingmask_default.a, {
         loading: this.state.preview === null,
         text: 'loading...',
