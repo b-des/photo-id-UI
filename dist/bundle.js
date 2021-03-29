@@ -7545,11 +7545,11 @@ function (_Component) {
         var crown = 0;
 
         if (this.props.standard.dimensions.crownTop) {
-          crown = this.props.standard.dimensions.crownTop * c;
-          chin = (this.props.standard.dimensions.faceHeight + this.props.standard.dimensions.crownTop) * c;
+          crown = parseFloat(this.props.standard.dimensions.crownTop) * c;
+          chin = (parseFloat(this.props.standard.dimensions.faceHeight) + parseFloat(this.props.standard.dimensions.crownTop)) * c;
         } else if (this.props.standard.dimensions.bottomEyeLine) {
-          crown = this.props.standard.dimensions.bottomEyeLine / 10;
-          chin = (this.props.standard.dimensions.faceHeight + crown) * c;
+          crown = parseFloat(this.props.standard.dimensions.bottomEyeLine) / 10;
+          chin = (parseFloat(this.props.standard.dimensions.faceHeight) + crown) * c;
           crown *= c;
         }
 
@@ -7645,21 +7645,23 @@ function (_Component) {
       // save image without scaling
 
       if (!dimensions.units || dimensions.units === 'mm') {
-        scale = this._watermakrImage.naturalWidth / 2 / dimensions.pictureWidth;
+        scale = this._watermakrImage.naturalWidth / dimensions.pictureWidth;
       }
 
       var payload = {
-        url: this.state.noBgImageUrl,
+        url: this.state.originalImageUrl || this.state.noBgImageUrl,
         debug: this.props.debug,
         uid: this.state.uid,
         hue: this.state.hue.value,
         corner: this.state.corner.value,
         scale: scale,
+        isOrder: true,
+        removeBackground: true,
         dimensions: {
-          width: dimensions.pictureWidth,
-          height: dimensions.pictureHeight,
-          crown: dimensions.crownTop,
-          chin: dimensions.faceHeight + dimensions.crownTop
+          width: parseFloat(dimensions.pictureWidth),
+          height: parseFloat(dimensions.pictureHeight),
+          crown: parseFloat(dimensions.crownTop),
+          chin: parseFloat(dimensions.faceHeight) + parseFloat(dimensions.crownTop)
         }
       };
       if (this.props.standard.extension) payload['ext'] = this.props.standard.extension;
