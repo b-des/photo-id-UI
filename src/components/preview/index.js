@@ -694,8 +694,8 @@ class Preview extends Component {
 					}
 
 					<div className="container mt-3">
-						<div className="dropdown">
-							<button className="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton"
+						<div className="dropdown text-center">
+							<button className="btn btn-outline-info dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
 									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								Управление цветом
 							</button>
