@@ -7,6 +7,7 @@ import React from 'preact/compat';
 import fabric from 'fabric/dist/fabric.min';
 import { getBoundingRectangleAfterRotate, transformCoordinateAfterRotate } from '../../model/point';
 import Options from './options';
+import ColorAdjustment from './adjustment';
 
 const initialState = {
 	preview: null,
@@ -25,7 +26,13 @@ const initialState = {
 	networkError: false,
 	selectedType: Constants.GENERATED,
 	inProcess: false,
-	isOptionsChanged: false
+	isOptionsChanged: false,
+	colorAdjustment: {
+		brightness: 100,
+		saturation: 100,
+		contrast : 100,
+		css: `brightness(100%) saturate(100%) contrast(100%)`
+	}
 };
 
 class Preview extends Component {
@@ -250,7 +257,7 @@ class Preview extends Component {
 				this._renderCanvas.setHeight(croppedImgInstance.height);
 				this._renderCanvas.add(croppedImgInstance);
 
-				if(!generateRender){
+				if (!generateRender) {
 					// copy image for preview
 					let imageCopy = Object.create(croppedImgInstance);
 					// scale image to fit preview canvas size
@@ -358,7 +365,8 @@ class Preview extends Component {
 			b64: null,
 			uid: this.state.uid,
 			hue: this.state.hue.value,
-			corner: this.state.corner.value
+			corner: this.state.corner.value,
+			colorAdjustment: this.state.colorAdjustment,
 		};
 
 		// if dimension of final photo is present in pixels
@@ -399,6 +407,7 @@ class Preview extends Component {
 			scale: scale,
 			isOrder: true,
 			removeBackground: true,
+			colorAdjustment: this.state.colorAdjustment,
 			dimensions: {
 				width: parseFloat(dimensions.pictureWidth),
 				height: parseFloat(dimensions.pictureHeight),
@@ -426,45 +435,6 @@ class Preview extends Component {
 			top: 0
 		});
 
-
-		/*image.scaleToHeight(animatedCanvas.getHeight(), true);
-		image.scaleToWidth(animatedCanvas.getWidth(), true);
-
-		if (image.height < image.width)
-			image.top = (image.height / image.width) * 2 * 10;
-
-		animatedCanvas.add(image);
-		let scannerLine = new this.fabric.Line([0, 0, animatedCanvas.getWidth(), 0], { stroke: 'red' });
-		animatedCanvas.add(scannerLine);
-
-		let down = true;
-		let step = 5;
-
-		let interval = setInterval(() => {
-
-			if (scannerLine.top >= 0 && !down) {
-				scannerLine.top -= step;
-			}
-			else if (scannerLine.top < animatedCanvas.getHeight() && down) {
-				scannerLine.top += step;
-			}
-			else if (scannerLine.top >= animatedCanvas.getHeight()) {
-				down = false;
-			}
-			else if (scannerLine.top <= 0) {
-				down = true;
-			}
-
-			if (this.state.preview || this.state.networkError) {
-				animatedCanvas.remove(scannerLine);
-				clearInterval(interval);
-			}
-
-			this.setState({
-				//loadingAnimation: animatedCanvas.toDataURL()
-			});
-
-		}, 50);*/
 
 		this.setState({
 			loadingAnimation: image.toDataURL()
@@ -626,6 +596,10 @@ class Preview extends Component {
 
 	}
 
+	adjustPhotoColors(settings){
+		this.setState({colorAdjustment: settings})
+	}
+
 	render(props, state, context) {
 		this.colors = this.props.standard.colors && this.props.standard.colors.length ?
 			this.props.standard.colors.map(color => {
@@ -668,7 +642,8 @@ class Preview extends Component {
 											className={`${this.state.hue.value === 'gray' ? 'grayscale' : ''} lower-canvas`}
 											style={{
 												width: `${this.state.dimensions.pictureWidth}px`,
-												height: `${this.state.dimensions.pictureHeight}px`, background: 'none'
+												height: `${this.state.dimensions.pictureHeight}px`, background: 'none',
+												filter: this.state.colorAdjustment.css
 											}}/>
 
 								</div>
@@ -689,7 +664,7 @@ class Preview extends Component {
 										 className={this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : null}>
 
 										<image xlinkHref={this.state.preview || this.state.loadingAnimation}
-											   x="0" y="0" height="100%" width="100%"/>
+											   x="0" y="0" height="100%" width="100%" style={{filter: this.state.colorAdjustment.css}}/>
 									</svg>
 								</div>
 								{this.props.isEditorOpen && <p className="label">Автоматический режим</p>}
@@ -717,6 +692,19 @@ class Preview extends Component {
 						</button>
 					</div>
 					}
+
+					<div className="container mt-3">
+						<div className="dropdown">
+							<button className="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton"
+									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Управление цветом
+							</button>
+							<div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<ColorAdjustment onColorChanged={settings => this.adjustPhotoColors.call(this, settings)}/>
+							</div>
+						</div>
+					</div>
+
 					{this.props.standard.extraOptions &&
 					<div className="container mt-3">
 						<div className="row">

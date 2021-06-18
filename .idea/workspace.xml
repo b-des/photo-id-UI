@@ -20,151 +20,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5506e9ab-0725-4106-a35a-2c65c7798fba" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/preview/adjustment.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/bundle.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/dist/bundle.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/preview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/index.js" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/dist/" />
-    <ignored path="$PROJECT_DIR$/node_modules/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FUSProjectUsageTrigger">
-    <session id="-1840247688">
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="gitignore" value="1" />
-          <entry key="jpg" value="2" />
-          <entry key="js" value="3" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="Image" value="2" />
-          <entry key="JavaScript" value="3" />
-          <entry key="PLAIN_TEXT" value="1" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="gitignore" value="31" />
-          <entry key="html" value="31" />
-          <entry key="js" value="240" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="HTML" value="31" />
-          <entry key="JavaScript" value="240" />
-          <entry key="PLAIN_TEXT" value="31" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="5" />
-          <entry key="project.open.time.2" value="3" />
-          <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="5" />
-        </counts>
-      </usages-collector>
-    </session>
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/webpack.config.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1725">
-              <caret line="75" column="25" selection-start-line="75" selection-start-column="25" selection-end-line="75" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/style/styles.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="69">
-              <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1311">
-              <caret line="175" column="10" selection-start-line="175" selection-start-column="10" selection-end-line="175" selection-end-column="10" />
-              <folding>
-                <element signature="e#1111#1706#0" />
-                <element signature="e#1723#2066#0" />
-                <element signature="e#2083#2215#0" />
-                <element signature="e#2238#3075#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="966">
-              <caret line="49" column="9" selection-start-line="49" selection-start-column="9" selection-end-line="49" selection-end-column="9" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/components/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3289">
-              <caret line="149" column="24" selection-start-line="149" selection-start-column="24" selection-end-line="149" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/components/editor/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="598">
-              <caret line="34" column="8" selection-start-line="34" selection-start-column="8" selection-end-line="34" selection-end-column="8" />
-              <folding>
-                <element signature="e#0#38#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/components/preview/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="543">
-              <caret line="189" column="84" selection-start-line="189" selection-start-column="80" selection-end-line="189" selection-end-column="84" />
-              <folding>
-                <element signature="e#0#38#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/model/point.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3266">
-              <caret line="142" column="7" lean-forward="true" selection-start-line="142" selection-start-column="7" selection-end-line="151" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/assets/new-no-bg.jpg">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-    </leaf>
+  <component name="ComposerSettings">
+    <execution />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -320,20 +189,8 @@
       <recent name="D:\Node\photo-passport-UI\src\model" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
   <component name="RunManager" selected="npm.BUILD">
-    <configuration name="BUILD" type="js.build_tools.npm" factoryName="npm">
+    <configuration name="BUILD" type="js.build_tools.npm">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
@@ -343,7 +200,7 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="DEV" type="js.build_tools.npm" factoryName="npm">
+    <configuration name="DEV" type="js.build_tools.npm">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
@@ -353,7 +210,7 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="SERVE" type="js.build_tools.npm" factoryName="npm">
+    <configuration name="SERVE" type="js.build_tools.npm">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
@@ -363,7 +220,7 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="watch" type="js.build_tools.npm" factoryName="npm" temporary="true" nameIsGenerated="true">
+    <configuration name="watch" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
@@ -385,7 +242,7 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -435,6 +292,9 @@
       <workItem from="1606201044787" duration="2893000" />
       <workItem from="1608382972660" duration="1339000" />
       <workItem from="1608458421993" duration="126000" />
+      <workItem from="1623579403193" duration="2490000" />
+      <workItem from="1623996415969" duration="302000" />
+      <workItem from="1623996864966" duration="2728000" />
     </task>
     <servers />
   </component>
@@ -470,78 +330,19 @@
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
-  </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="52" y="160" width="1806" height="793" key="#Live_Templates" timestamp="1601190168849">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="52" y="160" width="1806" height="793" key="#Live_Templates/0.27.1920.1053@0.27.1920.1053" timestamp="1601190168849" />
-    <state x="418" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602088010965">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="418" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1602088010965" />
-    <state x="693" y="302" width="524" height="509" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1601456988963">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="693" y="302" width="524" height="509" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1601456988963" />
-    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl" timestamp="1601726127896">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="743" y="311" width="424" height="491" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1601726127896" />
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom" timestamp="1602947899151">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.bottom/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899151" />
-    <state width="1874" height="234" key="GridCell.Tab.0.center" timestamp="1602947899151">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.center/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899151" />
-    <state width="1874" height="234" key="GridCell.Tab.0.left" timestamp="1602947899150">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.left/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899150" />
-    <state width="1874" height="234" key="GridCell.Tab.0.right" timestamp="1602947899151">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state width="1874" height="234" key="GridCell.Tab.0.right/0.27.1920.1053@0.27.1920.1053" timestamp="1602947899151" />
-    <state x="651" y="162" width="618" height="783" key="find.popup" timestamp="1602659541687">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="651" y="162" width="618" height="783" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1602659541687" />
-    <state x="852" y="451" width="260" height="219" key="publish.login" timestamp="1601800954705">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="852" y="451" width="260" height="219" key="publish.login/0.27.1920.1053@0.27.1920.1053" timestamp="1601800954705" />
-    <state x="624" y="252" key="run.anything.popup" timestamp="1602585892934">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="624" y="252" key="run.anything.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1602585892934" />
-    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1602657849722">
-      <screen x="0" y="27" width="1920" height="1053" />
-    </state>
-    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1602657849722" />
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/components/welcome/index.js">

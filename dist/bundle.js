@@ -7220,6 +7220,159 @@ function (_Component) {
 }(preact_module["a" /* Component */]);
 
 
+// CONCATENATED MODULE: ./src/components/preview/adjustment.js
+function adjustment_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { adjustment_typeof = function _typeof(obj) { return typeof obj; }; } else { adjustment_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return adjustment_typeof(obj); }
+
+function adjustment_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { adjustment_ownKeys(Object(source), true).forEach(function (key) { adjustment_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { adjustment_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function adjustment_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function adjustment_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function adjustment_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function adjustment_createClass(Constructor, protoProps, staticProps) { if (protoProps) adjustment_defineProperties(Constructor.prototype, protoProps); if (staticProps) adjustment_defineProperties(Constructor, staticProps); return Constructor; }
+
+function adjustment_possibleConstructorReturn(self, call) { if (call && (adjustment_typeof(call) === "object" || typeof call === "function")) { return call; } return adjustment_assertThisInitialized(self); }
+
+function adjustment_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function adjustment_getPrototypeOf(o) { adjustment_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return adjustment_getPrototypeOf(o); }
+
+function adjustment_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) adjustment_setPrototypeOf(subClass, superClass); }
+
+function adjustment_setPrototypeOf(o, p) { adjustment_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return adjustment_setPrototypeOf(o, p); }
+
+
+
+
+var adjustment_ColorAdjustment =
+/*#__PURE__*/
+function (_Component) {
+  adjustment_inherits(ColorAdjustment, _Component);
+
+  function ColorAdjustment() {
+    var _this;
+
+    adjustment_classCallCheck(this, ColorAdjustment);
+
+    _this = adjustment_possibleConstructorReturn(this, adjustment_getPrototypeOf(ColorAdjustment).call(this));
+    _this.state = {
+      brightness: 100,
+      saturation: 100,
+      contrast: 100
+    };
+    return _this;
+  }
+
+  adjustment_createClass(ColorAdjustment, [{
+    key: "changeBrightness",
+    value: function changeBrightness(e) {
+      var value = e.target.value;
+      this.setState({
+        brightness: value
+      });
+      this.sendSettings();
+    }
+  }, {
+    key: "changeSaturation",
+    value: function changeSaturation(e) {
+      var value = e.target.value;
+      this.setState({
+        saturation: value
+      });
+      this.sendSettings();
+    }
+  }, {
+    key: "changeContrast",
+    value: function changeContrast(e) {
+      var value = e.target.value;
+      this.setState({
+        contrast: value
+      });
+      this.sendSettings();
+    }
+  }, {
+    key: "sendSettings",
+    value: function sendSettings() {
+      var _this$state = this.state,
+          brightness = _this$state.brightness,
+          saturation = _this$state.saturation,
+          contrast = _this$state.contrast;
+      var css = "brightness(".concat(brightness, "%) saturate(").concat(saturation, "%) contrast(").concat(contrast, "%)");
+      this.props.onColorChanged(_objectSpread({
+        css: css
+      }, this.state));
+    }
+  }, {
+    key: "render",
+    value: function render(props, state, context) {
+      return Object(preact_module["h"])("div", {
+        className: 'p-1'
+      }, Object(preact_module["h"])("div", {
+        className: "row"
+      }, Object(preact_module["h"])("div", {
+        className: "col-md-12"
+      }, Object(preact_module["h"])("div", {
+        className: "form-group mb-0"
+      }, Object(preact_module["h"])("label", {
+        htmlFor: "exampleInputEmail1"
+      }, "\u042F\u0440\u043A\u043E\u0441\u0442\u044C: ", this.state.brightness, "%"), Object(preact_module["h"])("div", {
+        className: "input-group"
+      }, Object(preact_module["h"])("input", {
+        type: "range",
+        className: "form-control",
+        min: "0",
+        max: "200",
+        value: this.state.brightness,
+        onInput: this.changeBrightness.bind(this),
+        onChange: this.changeBrightness.bind(this)
+      }))))), Object(preact_module["h"])("div", {
+        className: "row"
+      }, Object(preact_module["h"])("div", {
+        className: "col-md-12"
+      }, Object(preact_module["h"])("div", {
+        className: "form-group mb-0"
+      }, Object(preact_module["h"])("label", {
+        htmlFor: "exampleInputEmail1"
+      }, "\u041D\u0430\u0441\u044B\u0449\u0435\u043D\u043E\u0441\u0442\u044C: ", this.state.saturation, "%"), Object(preact_module["h"])("div", {
+        className: "input-group"
+      }, Object(preact_module["h"])("input", {
+        type: "range",
+        className: "form-control",
+        min: "0",
+        max: "200",
+        value: this.state.saturation,
+        onInput: this.changeSaturation.bind(this),
+        onChange: this.changeSaturation.bind(this)
+      }))))), Object(preact_module["h"])("div", {
+        className: "row"
+      }, Object(preact_module["h"])("div", {
+        className: "col-md-12"
+      }, Object(preact_module["h"])("div", {
+        className: "form-group mb-0"
+      }, Object(preact_module["h"])("label", {
+        htmlFor: "exampleInputEmail1"
+      }, "\u041A\u043E\u043D\u0442\u0440\u0430\u0441\u0442:  ", this.state.contrast, "%"), Object(preact_module["h"])("div", {
+        className: "input-group"
+      }, Object(preact_module["h"])("input", {
+        type: "range",
+        className: "form-control",
+        min: "0",
+        max: "200",
+        value: this.state.contrast,
+        onInput: this.changeContrast.bind(this),
+        onChange: this.changeContrast.bind(this)
+      }))))));
+    }
+  }]);
+
+  return ColorAdjustment;
+}(preact_module["a" /* Component */]);
+
+
 // CONCATENATED MODULE: ./src/components/preview/index.js
 function preview_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { preview_typeof = function _typeof(obj) { return typeof obj; }; } else { preview_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return preview_typeof(obj); }
 
@@ -7238,6 +7391,7 @@ function preview_getPrototypeOf(o) { preview_getPrototypeOf = Object.setPrototyp
 function preview_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) preview_setPrototypeOf(subClass, superClass); }
 
 function preview_setPrototypeOf(o, p) { preview_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return preview_setPrototypeOf(o, p); }
+
 
 
 
@@ -7269,7 +7423,13 @@ var initialState = {
   networkError: false,
   selectedType: Constants.GENERATED,
   inProcess: false,
-  isOptionsChanged: false
+  isOptionsChanged: false,
+  colorAdjustment: {
+    brightness: 100,
+    saturation: 100,
+    contrast: 100,
+    css: "brightness(100%) saturate(100%) contrast(100%)"
+  }
 };
 
 var preview_Preview =
@@ -7623,7 +7783,8 @@ function (_Component) {
         b64: null,
         uid: this.state.uid,
         hue: this.state.hue.value,
-        corner: this.state.corner.value
+        corner: this.state.corner.value,
+        colorAdjustment: this.state.colorAdjustment
       }; // if dimension of final photo is present in pixels
       // save image with exact size
 
@@ -7657,6 +7818,7 @@ function (_Component) {
         scale: scale,
         isOrder: true,
         removeBackground: true,
+        colorAdjustment: this.state.colorAdjustment,
         dimensions: {
           width: parseFloat(dimensions.pictureWidth),
           height: parseFloat(dimensions.pictureHeight),
@@ -7891,6 +8053,13 @@ function (_Component) {
       });
     }
   }, {
+    key: "adjustPhotoColors",
+    value: function adjustPhotoColors(settings) {
+      this.setState({
+        colorAdjustment: settings
+      });
+    }
+  }, {
     key: "render",
     value: function render(props, state, context) {
       var _this9 = this;
@@ -7957,7 +8126,8 @@ function (_Component) {
         style: {
           width: "".concat(this.state.dimensions.pictureWidth, "px"),
           height: "".concat(this.state.dimensions.pictureHeight, "px"),
-          background: 'none'
+          background: 'none',
+          filter: this.state.colorAdjustment.css
         }
       })), Object(preact_module["h"])("p", {
         className: "label"
@@ -7980,7 +8150,10 @@ function (_Component) {
         x: "0",
         y: "0",
         height: "100%",
-        width: "100%"
+        width: "100%",
+        style: {
+          filter: this.state.colorAdjustment.css
+        }
       }))), this.props.isEditorOpen && Object(preact_module["h"])("p", {
         className: "label"
       }, "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0440\u0435\u0436\u0438\u043C")))), this.state.preview !== null && !this.props.isEditorOpen && Object(preact_module["h"])("div", {
@@ -7995,7 +8168,25 @@ function (_Component) {
         onClick: this.openEditor.bind(this),
         type: "button",
         className: "btn btn-dark"
-      }, "\u0420\u0443\u0447\u043D\u043E\u0439 \u0440\u0435\u0436\u0438\u043C")), this.props.standard.extraOptions && Object(preact_module["h"])("div", {
+      }, "\u0420\u0443\u0447\u043D\u043E\u0439 \u0440\u0435\u0436\u0438\u043C")), Object(preact_module["h"])("div", {
+        className: "container mt-3"
+      }, Object(preact_module["h"])("div", {
+        className: "dropdown"
+      }, Object(preact_module["h"])("button", {
+        className: "btn btn-outline-info dropdown-toggle",
+        type: "button",
+        id: "dropdownMenuButton",
+        "data-toggle": "dropdown",
+        "aria-haspopup": "true",
+        "aria-expanded": "false"
+      }, "\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0446\u0432\u0435\u0442\u043E\u043C"), Object(preact_module["h"])("div", {
+        className: "dropdown-menu",
+        "aria-labelledby": "dropdownMenuButton"
+      }, Object(preact_module["h"])(adjustment_ColorAdjustment, {
+        onColorChanged: function onColorChanged(settings) {
+          return _this9.adjustPhotoColors.call(_this9, settings);
+        }
+      })))), this.props.standard.extraOptions && Object(preact_module["h"])("div", {
         className: "container mt-3"
       }, Object(preact_module["h"])("div", {
         className: "row"
