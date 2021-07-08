@@ -211,7 +211,10 @@ p.label {
   color: #535353;
 }
 
-.lower-canvas, .upper-canvas {
-  border: none !important;
-  pointer-events: none;
+.previews{
+  .preview .lower-canvas, .preview .upper-canvas {
+    border: none !important;
+    pointer-events: none;
+  }
 }
+

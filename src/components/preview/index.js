@@ -74,7 +74,7 @@ class Preview extends Component {
 
 
 	componentDidUpdate(prevProps, prevState, nextContext) {
-
+		console.log(this.state);
 		// send request to generate photo
 		this.loadGeneratedPreview(prevProps);
 
@@ -639,11 +639,11 @@ class Preview extends Component {
 									${this.state.selectedType === Constants.CUSTOM ? 'active' : ''}`}
 									onClick={this.selectType.bind(this, Constants.CUSTOM)}>
 									<canvas id="canvasPreview"
-											className={`${this.state.hue.value === 'gray' ? 'grayscale' : ''} lower-canvas`}
+											className={`lower-canvas`}
 											style={{
 												width: `${this.state.dimensions.pictureWidth}px`,
 												height: `${this.state.dimensions.pictureHeight}px`, background: 'none',
-												filter: this.state.colorAdjustment.css
+												filter: this.state.colorAdjustment.css + (this.state.hue.value === 'gray' ? ' grayscale(100%)' : '')
 											}}/>
 
 								</div>
@@ -659,13 +659,15 @@ class Preview extends Component {
 									<div className="diode">
 										<div className="laser"></div>
 									</div>
-									<svg width={`${this.state.dimensions.pictureWidth}px`}
-										 height={`${this.state.dimensions.pictureHeight}px`} version="1.1"
-										 className={this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : null}>
+									<div  style={{filter: this.state.colorAdjustment.css}}>
+										<svg width={`${this.state.dimensions.pictureWidth}px`}
+											 height={`${this.state.dimensions.pictureHeight}px`} version="1.1"
+											 className={this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : ''}>
+											<image xlinkHref={this.state.preview || this.state.loadingAnimation}
+												   x="0" y="0" height="100%" width="100%"/>
+										</svg>
+									</div>
 
-										<image xlinkHref={this.state.preview || this.state.loadingAnimation}
-											   x="0" y="0" height="100%" width="100%" style={{filter: this.state.colorAdjustment.css}}/>
-									</svg>
 								</div>
 								{this.props.isEditorOpen && <p className="label">Автоматический режим</p>}
 							</div>

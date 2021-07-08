@@ -7474,7 +7474,8 @@ function (_Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState, nextContext) {
-      // send request to generate photo
+      console.log(this.state); // send request to generate photo
+
       this.loadGeneratedPreview(prevProps); // set canvas size for custom preview
 
       if (prevProps.standard !== this.props.standard) {
@@ -7842,37 +7843,6 @@ function (_Component) {
         left: 0,
         top: 0
       });
-      /*image.scaleToHeight(animatedCanvas.getHeight(), true);
-      image.scaleToWidth(animatedCanvas.getWidth(), true);
-      		if (image.height < image.width)
-      	image.top = (image.height / image.width) * 2 * 10;
-      		animatedCanvas.add(image);
-      let scannerLine = new this.fabric.Line([0, 0, animatedCanvas.getWidth(), 0], { stroke: 'red' });
-      animatedCanvas.add(scannerLine);
-      		let down = true;
-      let step = 5;
-      		let interval = setInterval(() => {
-      			if (scannerLine.top >= 0 && !down) {
-      		scannerLine.top -= step;
-      	}
-      	else if (scannerLine.top < animatedCanvas.getHeight() && down) {
-      		scannerLine.top += step;
-      	}
-      	else if (scannerLine.top >= animatedCanvas.getHeight()) {
-      		down = false;
-      	}
-      	else if (scannerLine.top <= 0) {
-      		down = true;
-      	}
-      			if (this.state.preview || this.state.networkError) {
-      		animatedCanvas.remove(scannerLine);
-      		clearInterval(interval);
-      	}
-      			this.setState({
-      		//loadingAnimation: animatedCanvas.toDataURL()
-      	});
-      		}, 50);*/
-
       this.setState({
         loadingAnimation: image.toDataURL()
       });
@@ -8122,12 +8092,12 @@ function (_Component) {
         onClick: this.selectType.bind(this, Constants.CUSTOM)
       }, Object(preact_module["h"])("canvas", {
         id: "canvasPreview",
-        className: "".concat(this.state.hue.value === 'gray' ? 'grayscale' : '', " lower-canvas"),
+        className: "lower-canvas",
         style: {
           width: "".concat(this.state.dimensions.pictureWidth, "px"),
           height: "".concat(this.state.dimensions.pictureHeight, "px"),
           background: 'none',
-          filter: this.state.colorAdjustment.css
+          filter: this.state.colorAdjustment.css + (this.state.hue.value === 'gray' ? ' grayscale(100%)' : '')
         }
       })), Object(preact_module["h"])("p", {
         className: "label"
@@ -8140,21 +8110,22 @@ function (_Component) {
         className: "diode"
       }, Object(preact_module["h"])("div", {
         className: "laser"
-      })), Object(preact_module["h"])("svg", {
+      })), Object(preact_module["h"])("div", {
+        style: {
+          filter: this.state.colorAdjustment.css
+        }
+      }, Object(preact_module["h"])("svg", {
         width: "".concat(this.state.dimensions.pictureWidth, "px"),
         height: "".concat(this.state.dimensions.pictureHeight, "px"),
         version: "1.1",
-        className: this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : null
+        className: this.state.hue.value === 'gray' && this.state.preview ? 'grayscale' : ''
       }, Object(preact_module["h"])("image", {
         xlinkHref: this.state.preview || this.state.loadingAnimation,
         x: "0",
         y: "0",
         height: "100%",
-        width: "100%",
-        style: {
-          filter: this.state.colorAdjustment.css
-        }
-      }))), this.props.isEditorOpen && Object(preact_module["h"])("p", {
+        width: "100%"
+      })))), this.props.isEditorOpen && Object(preact_module["h"])("p", {
         className: "label"
       }, "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0440\u0435\u0436\u0438\u043C")))), this.state.preview !== null && !this.props.isEditorOpen && Object(preact_module["h"])("div", {
         className: 'container text-center'
@@ -8171,9 +8142,9 @@ function (_Component) {
       }, "\u0420\u0443\u0447\u043D\u043E\u0439 \u0440\u0435\u0436\u0438\u043C")), Object(preact_module["h"])("div", {
         className: "container mt-3"
       }, Object(preact_module["h"])("div", {
-        className: "dropdown"
+        className: "dropdown text-center"
       }, Object(preact_module["h"])("button", {
-        className: "btn btn-outline-info dropdown-toggle",
+        className: "btn btn-outline-info dropdown-toggle btn-sm",
         type: "button",
         id: "dropdownMenuButton",
         "data-toggle": "dropdown",
